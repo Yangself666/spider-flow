@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ocr · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="../course/quick-start.html">快速入门</a>
+				<a href="../course/expression.html">表达式语法</a>
+				<a href="../course/variable.html">内置变量</a>
+				<a href="../course/advanced.html">高级应用</a>
+				<a href="../course/plugin.html">插件开发</a>
+				<a href="../course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="selenium.html">selenium</a>
+				<a href="redis.html">redis</a>
+				<a href="mongodb.html">mongodb</a>
+				<a href="oss.html">oss</a>
+				<a href="ocr.html" aria-current="page">ocr</a>
+				<a href="proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="ocr">ocr</h1>
+<h4 id="引入ocr插件">引入ocr插件</h4>
+<p>首先到码云下载插件<a href="https://gitee.com/ssssssss-team/spider-flow-ocr">点击下载</a>到本地并导入到工作空间或安装到maven库</p>
+<h4 id="使用方法">使用方法</h4>
+<p>在 spider-flow-web pom.xml引用</p>
+<pre><code class="language-xml">&lt;dependency&gt;
+        &lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+        &lt;artifactId&gt;spider-flow-ocr&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h4 id="使用操作">使用操作</h4>
+<p><strong>例子在example文件夹</strong></p>
+<p>先配置一下信息<br>
+<img src="../images/settings.png" alt="输入图片说明" title="settings.png"></p>
+<p>识别效果<br>
+<img src="../images/ocr_test.png" alt="输入图片说明" title="ocr_test.png"></p>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

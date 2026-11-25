@@ -55,5 +55,37 @@
 - [magic-api-spring-boot-starter](https://gitee.com/ssssssss-team/magic-api-spring-boot-starter)
 
 
+## Docker 部署
+
+直接编辑 `compose.yaml`。使用内置 MySQL 时，把 `MYSQL_PASSWORD` 和 `SPRING_DATASOURCE_PASSWORD` 改成同一个业务账号密码，再为 `MYSQL_ROOT_PASSWORD` 设置管理密码。
+
+```bash
+mkdir -p ./data/spider ./data/mysql
+docker compose up -d --build
+docker compose ps
+```
+
+在使用常规 Docker 引擎的 Linux 宿主机上，启动前执行 `sudo chown 10001:10001 ./data/spider`，让应用容器的运行用户可以写入目录。接入外部 MySQL 时只需准备 `./data/spider`。
+
+默认访问 `http://127.0.0.1:8088`。应用端口默认仅绑定宿主机回环地址，线上可由反向代理转发。MySQL 数据和 SpiderFlow 工作目录分别保存在 Compose 文件旁的 `./data/mysql` 和 `./data/spider`。内置 MySQL 首次启动时会创建空表。已有命名卷中的数据需要在切换前迁入对应目录。
+
+| 环境变量 | 用途 |
+| --- | --- |
+| `ports` | 应用在宿主机的监听地址和端口 |
+| `MYSQL_DATABASE`、`MYSQL_USER`、`MYSQL_PASSWORD`、`MYSQL_ROOT_PASSWORD` | Compose 内置 MySQL 的首次初始化参数 |
+| `SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD` | 覆盖应用的数据库连接 |
+| `SPIDER_JOB_ENABLE` | 设为 `true` 后运行已启用且配置了 Cron 的流程，默认 `false` |
+| `SPRING_MAIL_HOST`、`SPRING_MAIL_PORT`、`SPRING_MAIL_USERNAME`、`SPRING_MAIL_PASSWORD` | 邮件服务器和账号 |
+| `SMTP_AUTH`、`SMTP_SSL_ENABLE`、`SMTP_STARTTLS_ENABLE` | SMTP 认证和加密模式。常见配置为 465 端口启用 SSL，或 587 端口启用 STARTTLS |
+| `TZ`、`JAVA_TOOL_OPTIONS` | 容器时区和 JVM 参数 |
+
+使用已有 MySQL 时，直接修改 `spider-flow.environment` 下的三项 `SPRING_DATASOURCE_*`，确认目标库已有 SpiderFlow 表结构，再单独启动应用。
+
+```bash
+docker compose up -d --build --no-deps spider-flow
+```
+
+定时任务、线程数、时区、JVM 参数和 SMTP 属于可选项。按需在 `compose.yaml` 取消对应行的注释并修改示例值，再重新执行启动命令应用配置。
+
 ## 免责声明
 请勿将`spider-flow`应用到任何可能会违反法律规定和道德约束的工作中，请友善使用`spider-flow`，遵守蜘蛛协议，不要将`spider-flow`用于任何非法用途。如您选择使用`spider-flow`即代表您遵守此协议，作者不承担任何由于您违反此协议带来任何的法律风险和损失，一切后果由您承担。

@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>selenium · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="../course/quick-start.html">快速入门</a>
+				<a href="../course/expression.html">表达式语法</a>
+				<a href="../course/variable.html">内置变量</a>
+				<a href="../course/advanced.html">高级应用</a>
+				<a href="../course/plugin.html">插件开发</a>
+				<a href="../course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="selenium.html" aria-current="page">selenium</a>
+				<a href="redis.html">redis</a>
+				<a href="mongodb.html">mongodb</a>
+				<a href="oss.html">oss</a>
+				<a href="ocr.html">ocr</a>
+				<a href="proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="selenium">selenium</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#%E5%BC%95%E5%85%A5selenium%E6%8F%92%E4%BB%B6">引入selenium插件</a></li><li><a href="#%E8%8A%82%E7%82%B9%E8%AF%B4%E6%98%8E">节点说明</a></li><li><a href="#seleniumresponse-%E5%B1%9E%E6%80%A7">SeleniumResponse 属性</a></li><li><a href="#seleniumresponse-%E6%96%B9%E6%B3%95">SeleniumResponse 方法</a></li><li><a href="#webelement-%E6%96%B9%E6%B3%95">WebElement 方法</a></li><li><a href="#webelements-%E6%96%B9%E6%B3%95">WebElements 方法</a></li></ul></details>
+<h2 id="引入selenium插件">引入selenium插件</h2>
+<ol>
+<li>首先到码云下载插件<a href="https://gitee.com/ssssssss-team/spider-flow-selenium">点击下载</a>到本地并导入到工作空间或安装到maven库</li>
+<li>在spider-flow/spider-flow-web/pom.xml中引入插件</li>
+</ol>
+<pre><code class="language-xml">&lt;!-- 引入selenium插件 --&gt;
+&lt;dependency&gt;
+	&lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+	&lt;artifactId&gt;spider-flow-selenium&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<ol start="3">
+<li>在spider-flow/spider-flow-web/application.properties中配置驱动路径</li>
+</ol>
+<ul>
+<li>chrome驱动下载地址：<a href="http://npm.taobao.org/mirrors/chromedriver/">http://npm.taobao.org/mirrors/chromedriver/</a> 注意版本问题</li>
+<li>firefox驱动下载地址：<a href="https://github.com/mozilla/geckodriver/releases">https://github.com/mozilla/geckodriver/releases</a></li>
+</ul>
+<h2 id="节点说明">节点说明</h2>
+<ul>
+<li>页面加载超时时间,单位为毫秒</li>
+<li>元素获取超时时间,单位为毫秒</li>
+<li>URL:起始地址</li>
+<li>节点执行完毕后，会产生<code>resp</code> 类型为<code>SeleniumResponse</code>的变量</li>
+</ul>
+<h2 id="seleniumresponse-属性">SeleniumResponse 属性</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段类型</th>
+<th>字段描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>html</td>
+<td>String</td>
+<td>页面HTML</td>
+</tr>
+<tr>
+<td>json</td>
+<td>JSONObject/JSONArray</td>
+<td>内容转json结果</td>
+</tr>
+<tr>
+<td>cookies</td>
+<td>Map&lt;String,String&gt;</td>
+<td>cookies</td>
+</tr>
+<tr>
+<td>url</td>
+<td>String</td>
+<td>当前页面的URL</td>
+</tr>
+<tr>
+<td>title</td>
+<td>String</td>
+<td>当前页面的标题</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="seleniumresponse-方法">SeleniumResponse 方法</h2>
+<h3 id="switchto">switchTo</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">index/iframeName/WebElement</td>
+<td style="text-align:center">要切换的iframe</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<pre><code class="language-javascript">${resp.switchTo(index)}
+</code></pre>
+<aside class="tip">
+<p>返回值类型：SeleniumResponse</p>
+</aside>
+<h3 id="switchtodefault">switchToDefault</h3>
+<p>切换至默认,即从iframe里切换回来</p>
+<pre><code class="language-javascript">${resp.switchToDefault()}
+</code></pre>
+<h3 id="selector">selector</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">cssSelector</td>
+<td style="text-align:center">要获取的cssSelector</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>获取页面上的第一个div</p>
+<pre><code class="language-javascript">${resp.selector('div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="selectors">selectors</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">cssSelector</td>
+<td style="text-align:center">要获取的cssSelector</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElements</p>
+</aside>
+<ul>
+<li>
+<p>获取页面上的所有div</p>
+<pre><code class="language-javascript">${resp.selectors('div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="xpath">xpath</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">xpath</td>
+<td style="text-align:center">要获取的xpath</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>获取页面上的第一个div</p>
+<pre><code class="language-javascript">${resp.xpath('//div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="xpaths">xpaths</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">xpath</td>
+<td style="text-align:center">要获取的xpath</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElements</p>
+</aside>
+<ul>
+<li>
+<p>获取页面上的所有div</p>
+<pre><code class="language-javascript">${resp.xpaths('//div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="executescript">executeScript</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">script</td>
+<td style="text-align:center">js脚本</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">List&lt;Object&gt;</td>
+<td style="text-align:center">参数</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：Object</p>
+</aside>
+<ul>
+<li>
+<p>执行js</p>
+<pre><code class="language-javascript">${resp.executeScript('return &quot;hello spider-flow-&quot; + arguments[0];',['selenium'])}
+</code></pre>
+</li>
+</ul>
+<h3 id="quit">quit</h3>
+<ul>
+<li>
+<p>退出浏览器</p>
+<pre><code class="language-javascript">${resp.quit()}
+</code></pre>
+</li>
+</ul>
+<h3 id="tourl">toUrl</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">url</td>
+<td style="text-align:center">要跳转的url</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>
+<p>跳转到百度</p>
+<pre><code class="language-javascript">${resp.toUrl('https://www.baidu.com')}
+</code></pre>
+</li>
+</ul>
+<h3 id="loadcookies">loadCookies</h3>
+<ul>
+<li>将cookie加载至cookieContext中，以便后续自动管理cookie<pre><code class="language-javascript">${resp.loadCookies()}
+</code></pre>
+</li>
+</ul>
+<h2 id="webelement-方法">WebElement 方法</h2>
+<h3 id="html">html</h3>
+<aside class="tip">
+<p>返回值类型：String</p>
+</aside>
+<ul>
+<li>
+<p>获取节点的html</p>
+<pre><code class="language-javascript">${elementVar.html()}
+</code></pre>
+</li>
+</ul>
+<h3 id="text">text</h3>
+<aside class="tip">
+<p>返回值类型：String</p>
+</aside>
+<ul>
+<li>
+<p>获取节点的text</p>
+<pre><code class="language-javascript">${elementVar.text()}
+</code></pre>
+</li>
+</ul>
+<h3 id="attr">attr</h3>
+<aside class="tip">
+<p>返回值类型：String</p>
+</aside>
+<ul>
+<li>
+<p>获取节点的href属性</p>
+<pre><code class="language-javascript">${elementVar.attr('href')}
+</code></pre>
+</li>
+</ul>
+<h3 id="selector-2">selector</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">cssSelector</td>
+<td style="text-align:center">要获取的cssSelector</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>获取该节点下的第一个div</p>
+<pre><code class="language-javascript">${elementVar.selector('div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="selectors-2">selectors</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">cssSelector</td>
+<td style="text-align:center">要获取的cssSelector</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElements</p>
+</aside>
+<ul>
+<li>
+<p>获取获取该节点下的所有div</p>
+<pre><code class="language-javascript">${elementVar.selectors('div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="xpath-2">xpath</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">xpath</td>
+<td style="text-align:center">要获取的xpath</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>获取获取该节点下的第一个div</p>
+<pre><code class="language-javascript">${elementVar.xpath('//div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="xpaths-2">xpaths</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">xpath</td>
+<td style="text-align:center">要获取的xpath</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElements</p>
+</aside>
+<ul>
+<li>
+<p>获取获取该节点下的所有div</p>
+<pre><code class="language-javascript">${elementVar.xpaths('//div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="screenshot">screenshot</h3>
+<aside class="tip">
+<p>返回值类型：byte[]</p>
+</aside>
+<ul>
+<li>
+<p>对该节点进行截图</p>
+<pre><code class="language-javascript">${elementVar.screenshot()}
+</code></pre>
+</li>
+</ul>
+<h3 id="click">click</h3>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>对该节点进行点击</p>
+<pre><code class="language-javascript">${elementVar.click()}
+</code></pre>
+</li>
+</ul>
+<h3 id="sendkeys">sendKeys</h3>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>对该节点进行模拟按键</p>
+<pre><code class="language-javascript">${elementVar.sendKeys('hello spider-flow')}
+</code></pre>
+</li>
+</ul>
+<h3 id="clickandhold">clickAndHold</h3>
+<h3 id="release">release</h3>
+<h3 id="move">move</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">offset_x</td>
+<td style="text-align:center">offset x</td>
+<td style="text-align:center">是</td>
+</tr>
+<tr>
+<td style="text-align:center">offset_y</td>
+<td style="text-align:center">offset y</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>在该节点上模拟鼠标移动，当offset_x和offset_y为空时，则模拟鼠标移动到该节点上</p>
+</aside>
+<h3 id="doubleclick">doubleClick</h3>
+<h3 id="pause">pause</h3>
+<h3 id="perform">perform</h3>
+<aside class="tip">
+<p>以上6个方法是配套使用，调用perform时才是真正执行动作</p>
+</aside>
+<ul>
+<li>模拟鼠标移动到该节点上，等待500ms在点击，等待500ms在移动，最后释放(模拟拖拽滑块条)<pre><code class="language-javascript"> ${elementVar.move().pause(500).clickAndHold().pause(500).move(200,0).release().perform()}
+</code></pre>
+</li>
+</ul>
+<h2 id="webelements-方法">WebElements 方法</h2>
+<h3 id="html-2">html</h3>
+<aside class="tip">
+<p>返回值类型：List&lt;String&gt;</p>
+</aside>
+<ul>
+<li>
+<p>获取节点的html</p>
+<pre><code class="language-javascript">${elementsVar.html()}
+</code></pre>
+</li>
+</ul>
+<h3 id="text-2">text</h3>
+<aside class="tip">
+<p>返回值类型：List&lt;String&gt;</p>
+</aside>
+<ul>
+<li>
+<p>获取节点的text</p>
+<pre><code class="language-javascript">${elementsVar.text()}
+</code></pre>
+</li>
+</ul>
+<h3 id="attr-2">attr</h3>
+<aside class="tip">
+<p>返回值类型：List&lt;String&gt;</p>
+</aside>
+<ul>
+<li>
+<p>获取节点的href属性</p>
+<pre><code class="language-javascript">${elementsVar.attr('href')}
+</code></pre>
+</li>
+</ul>
+<h3 id="selector-3">selector</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">cssSelector</td>
+<td style="text-align:center">要获取的cssSelector</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>获取该节点下的第一个div</p>
+<pre><code class="language-javascript">${elementsVar.selector('div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="selectors-3">selectors</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">cssSelector</td>
+<td style="text-align:center">要获取的cssSelector</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElements</p>
+</aside>
+<ul>
+<li>
+<p>获取获取该节点下的所有div</p>
+<pre><code class="language-javascript">${elementsVar.selectors('div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="xpath-3">xpath</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">xpath</td>
+<td style="text-align:center">要获取的xpath</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElement</p>
+</aside>
+<ul>
+<li>
+<p>获取获取该节点下的第一个div</p>
+<pre><code class="language-javascript">${elementsVar.xpath('//div')}
+</code></pre>
+</li>
+</ul>
+<h3 id="xpaths-3">xpaths</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">xpath</td>
+<td style="text-align:center">要获取的xpath</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：WebElements</p>
+</aside>
+<ul>
+<li>
+<p>获取获取该节点下的所有div</p>
+<pre><code class="language-javascript">${elementsVar.xpaths('//div')}
+</code></pre>
+</li>
+</ul>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

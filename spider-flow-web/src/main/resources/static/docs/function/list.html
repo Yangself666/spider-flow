@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>list · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="../course/quick-start.html">快速入门</a>
+				<a href="../course/expression.html">表达式语法</a>
+				<a href="../course/variable.html">内置变量</a>
+				<a href="../course/advanced.html">高级应用</a>
+				<a href="../course/plugin.html">插件开发</a>
+				<a href="../course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="extra.html">抽取函数</a>
+				<a href="base64.html">base64</a>
+				<a href="date.html">date</a>
+				<a href="file.html">file</a>
+				<a href="json.html">json</a>
+				<a href="list.html" aria-current="page">list</a>
+				<a href="random.html">random</a>
+				<a href="string.html">string</a>
+				<a href="url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="../plugins/selenium.html">selenium</a>
+				<a href="../plugins/redis.html">redis</a>
+				<a href="../plugins/mongodb.html">mongodb</a>
+				<a href="../plugins/oss.html">oss</a>
+				<a href="../plugins/ocr.html">ocr</a>
+				<a href="../plugins/proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="list">list</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#length">length</a></li><li><a href="#split">split</a></li><li><a href="#sublist">subList</a></li><li><a href="#filterstr">filterStr</a></li></ul></details>
+<h2 id="length">length</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">List</td>
+<td style="text-align:center">要获取长度的List</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：int</p>
+</aside>
+<ul>
+<li>
+<p>获取List的长度</p>
+<pre><code class="language-javascript">${list.length(listVar)}
+</code></pre>
+</li>
+</ul>
+<h2 id="split">split</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">List</td>
+<td style="text-align:center">要分割的List</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">len</td>
+<td style="text-align:center">每个子List的长度</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：List&lt;List&gt;</p>
+</aside>
+<ul>
+<li>
+<p>将List分割成10个一组</p>
+<pre><code class="language-javascript">${list.split(listVar,10)}
+</code></pre>
+</li>
+</ul>
+<h2 id="sublist">subList</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">List</td>
+<td style="text-align:center">要截取的List</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">fromIndex</td>
+<td style="text-align:center">起始位置</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">endIndex</td>
+<td style="text-align:center">结束位置</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：List</p>
+</aside>
+<ul>
+<li>
+<p>截取List</p>
+<pre><code class="language-javascript">${list.subList(listVar,2,5)}
+</code></pre>
+</li>
+</ul>
+<h2 id="filterstr">filterStr</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">List&lt;String&gt;</td>
+<td style="text-align:center">要过滤的List</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">pattern</td>
+<td style="text-align:center">正则表达式</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：List&lt;String&gt;</p>
+</aside>
+<ul>
+<li>
+<p>根据正则表达式过滤字符串list元素</p>
+<pre><code class="language-javascript">${list.filterStr(listVar,pattern)}
+</code></pre>
+</li>
+</ul>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

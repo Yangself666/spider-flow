@@ -1,0 +1,107 @@
+# 直接修改本文件中的示例值，可选项按需取消注释
+services:
+  # SpiderFlow Web 应用
+  spider-flow:
+    # 构建后的镜像名和标签
+    image: spider-flow:0.5.0
+    # 使用项目根目录的 Dockerfile 构建镜像
+    build: .
+    # 异常退出或 Docker 重启时恢复服务，手动停止除外
+    restart: unless-stopped
+    ports:
+      # 宿主机监听地址和端口映射到容器 8088 端口，默认供本机或反向代理访问
+      - "127.0.0.1:8088:8088"
+    depends_on:
+      mysql:
+        # 等内置 MySQL 可以查询 SpiderFlow 表后再启动应用
+        condition: service_healthy
+    volumes:
+      # 保存流程历史、任务日志和去重记录
+      - ./data/spider:/data/spider
+    environment:
+      # 数据库连接配置
+      # 数据库登录密码，使用内置 MySQL 时与 MYSQL_PASSWORD 一致
+      SPRING_DATASOURCE_PASSWORD: 'your password'
+      # 数据库 JDBC 地址，默认使用 Compose 内的 MySQL 并要求加密连接
+      SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql:3306/spiderflow'
+      # 数据库登录账号，使用内置 MySQL 时与 MYSQL_USER 一致
+      SPRING_DATASOURCE_USERNAME: 'spiderflow'
+
+      # 可选应用配置，按需取消注释
+      # 容器时区，也用于定时任务和日期显示
+      # TZ: 'Asia/Shanghai'
+      # JVM 启动参数，镜像默认初始堆 128 MB，最大堆 512 MB
+      # JAVA_TOOL_OPTIONS: '-Xms128m -Xmx512m'
+
+      # 全局定时任务开关，设为 true 后运行已启用且配置了 Cron 的流程
+      # SPIDER_JOB_ENABLE: 'false'
+      # 平台共享线程池上限
+      # SPIDER_THREAD_MAX: '64'
+      # 流程未设置最大线程数时使用的默认并发数
+      # SPIDER_THREAD_DEFAULT: '8'
+
+      # SMTP 服务器地址，配置流程邮件通知时填写
+      # SPRING_MAIL_HOST: 'smtp.example.com'
+      # SMTP 服务器端口，常见配置为 25、465 或 587
+      # SPRING_MAIL_PORT: '587'
+      # SMTP 登录账号，也用作邮件发件人
+      # SPRING_MAIL_USERNAME: 'spiderflow@example.com'
+      # SMTP 登录密码或服务商提供的授权码
+      # SPRING_MAIL_PASSWORD: 'your SMTP password'
+      # SMTP 服务器要求登录时设为 true
+      # SMTP_AUTH: 'true'
+      # 从建立连接起启用 SSL/TLS，常用于 465 端口
+      # SMTP_SSL_ENABLE: 'false'
+      # 建立连接后通过 STARTTLS 升级为加密连接，常用于 587 端口
+      # SMTP_STARTTLS_ENABLE: 'true'
+      # 建立 SMTP 连接的超时，单位为毫秒
+      # SMTP_CONNECT_TIMEOUT: '5000'
+      # 等待 SMTP 服务器返回数据的超时，单位为毫秒
+      # SMTP_READ_TIMEOUT: '5000'
+      # 向 SMTP 服务器发送数据的超时，单位为毫秒
+      # SMTP_WRITE_TIMEOUT: '5000'
+
+  # 内置数据库服务，接入已有 MySQL 时可以只启动 spider-flow 服务
+  mysql:
+    # 使用 MySQL 8.4 LTS 系列镜像
+    image: mysql:8.4
+    # 异常退出或 Docker 重启时恢复数据库，手动停止除外
+    restart: unless-stopped
+    volumes:
+      # 持久保存 MySQL 数据目录
+      - ./data/mysql:/var/lib/mysql
+      # 仅在数据目录首次初始化时执行，用于导入空表结构
+      - ./docker/mysql-init.sh:/docker-entrypoint-initdb.d/01-spiderflow.sh:ro
+      # 初始化脚本使用的原始 SQL，以只读方式挂载
+      - ./db/spiderflow.sql:/spiderflow-schema.sql:ro
+    healthcheck:
+      # 使用业务账号连到 MySQL 并检查流程表已创建
+      test:
+        - CMD-SHELL
+        - >-
+          MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP --host=127.0.0.1
+          --user="$$MYSQL_USER" --database="$$MYSQL_DATABASE"
+          --execute="SELECT id FROM sp_flow LIMIT 0" > /dev/null
+      # 每 5 秒检查一次
+      interval: 5s
+      # 单次检查最多等待 5 秒
+      timeout: 5s
+      # 连续失败 30 次后标为不健康
+      retries: 30
+      # 前 30 秒给数据库初始化，期间失败不计入重试
+      start_period: 30s
+    environment:
+      # 内置 MySQL 首次部署必填项
+      # 内置 MySQL 的业务账号密码，替换为实际密码并与应用数据库密码保持一致
+      MYSQL_PASSWORD: 'your password'
+      # 内置 MySQL 的 root 管理密码，首次启动前替换为实际密码
+      MYSQL_ROOT_PASSWORD: 'your root password'
+      # 初始化数据库和业务账号，缺省使用 spiderflow
+      # 数据目录首次初始化时创建的业务数据库
+      MYSQL_DATABASE: 'spiderflow'
+      # 首次初始化时创建的非 root 业务账号
+      MYSQL_USER: 'spiderflow'
+
+      # 可选数据库配置，按需取消注释
+      # MySQL 容器时区，取消注释后默认与应用一致
+      # TZ: 'Asia/Shanghai'

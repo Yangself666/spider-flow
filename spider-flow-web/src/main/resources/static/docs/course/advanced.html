@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>高级应用 · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="quick-start.html">快速入门</a>
+				<a href="expression.html">表达式语法</a>
+				<a href="variable.html">内置变量</a>
+				<a href="advanced.html" aria-current="page">高级应用</a>
+				<a href="plugin.html">插件开发</a>
+				<a href="faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="../plugins/selenium.html">selenium</a>
+				<a href="../plugins/redis.html">redis</a>
+				<a href="../plugins/mongodb.html">mongodb</a>
+				<a href="../plugins/oss.html">oss</a>
+				<a href="../plugins/ocr.html">ocr</a>
+				<a href="../plugins/proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="高级应用">高级应用</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0">自定义函数</a></li><li><a href="#%E7%88%AC%E5%8F%96%E5%8A%A8%E6%80%81%E6%B8%B2%E6%9F%93%E7%9A%84%E9%A1%B5%E9%9D%A2">爬取动态渲染的页面</a></li></ul></details>
+<h2 id="自定义函数">自定义函数</h2>
+<h3 id="自定义函数介绍">自定义函数介绍</h3>
+<p>在开发爬虫的过程中,发现无法使用现有函数完成想要的功能，也不想在java中开发，此时就可以考虑使用自定义函数，自定义函数的语法是JS(Java Nashorn引擎)</p>
+<h3 id="定义自定义函数">定义自定义函数</h3>
+<p><img src="../images/course/function-screenshot.png" alt="流程实例三" title="function-screenshot.png"></p>
+<h3 id="使用自定义函数">使用自定义函数</h3>
+<ul>
+<li>在表达式中使用，<code>${add(1,2)}</code></li>
+</ul>
+<h2 id="爬取动态渲染的页面">爬取动态渲染的页面</h2>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

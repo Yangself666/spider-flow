@@ -34,3 +34,22 @@ li.CodeMirror-hint-active {
   background: #08f;
   color: white;
 }
+
+.spiderflow-hint {
+  padding: 4px 8px;
+  max-width: min(500px, calc(100vw - 32px));
+}
+.spiderflow-hint-signature,
+.spiderflow-hint-detail {
+  display: block;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.spiderflow-hint-detail {
+  display: none;
+  opacity: .9;
+  font-size: .9em;
+}
+.CodeMirror-hint-active > .spiderflow-hint-detail {
+  display: block;
+}

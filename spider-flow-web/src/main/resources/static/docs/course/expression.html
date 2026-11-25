@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>表达式语法 · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="quick-start.html">快速入门</a>
+				<a href="expression.html" aria-current="page">表达式语法</a>
+				<a href="variable.html">内置变量</a>
+				<a href="advanced.html">高级应用</a>
+				<a href="plugin.html">插件开发</a>
+				<a href="faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="../plugins/selenium.html">selenium</a>
+				<a href="../plugins/redis.html">redis</a>
+				<a href="../plugins/mongodb.html">mongodb</a>
+				<a href="../plugins/oss.html">oss</a>
+				<a href="../plugins/ocr.html">ocr</a>
+				<a href="../plugins/proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="表达式语法">表达式语法</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95">基本用法</a></li><li><a href="#%E8%BF%90%E7%AE%97%E7%AC%A6">运算符</a></li><li><a href="#%E7%B1%BB%E5%9E%8B">类型</a></li><li><a href="#%E4%B8%80%E5%85%83%E8%BF%90%E7%AE%97%E7%AC%A6">一元运算符</a></li><li><a href="#%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E7%AC%A6">算术运算符</a></li><li><a href="#%E6%AF%94%E8%BE%83%E8%BF%90%E7%AE%97%E7%AC%A6">比较运算符</a></li><li><a href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6">逻辑运算符</a></li><li><a href="#%E4%B8%89%E5%85%83%E8%BF%90%E7%AE%97%E7%AC%A6">三元运算符</a></li><li><a href="#%E5%8F%98%E9%87%8F">变量</a></li><li><a href="#%E8%B0%83%E7%94%A8%E6%96%B9%E6%B3%95">调用方法</a></li><li><a href="#%E6%95%B0%E7%BB%84%E5%92%8Cmap">数组和Map</a></li><li><a href="#%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8">链式调用</a></li></ul></details>
+<h2 id="基本用法">基本用法</h2>
+<p>本项目中表达式引擎也支持模板的方式，例如动态拼接url</p>
+<pre><code class="language-javascript">https://www.xxx.com/${path}/q?=keyword=${keyword}
+</code></pre>
+<h2 id="运算符">运算符</h2>
+<p>模板语言支持大多数Java运算符。这些运算符的优先级也与Java中的相同。</p>
+<h2 id="类型">类型</h2>
+<pre><code class="language-javascript">byte ${123b}
+short ${123s}
+int ${123}
+long ${123l}
+float ${123f}
+double ${123d}
+string ${'hello'}
+string ${&quot;hello&quot;}
+</code></pre>
+<p>同时也支持定义Map和List</p>
+<pre><code class="language-javascript">${{key : &quot;value&quot;}}
+${[1,2,3,4,5]}
+${{$key : &quot;value&quot;}}//$key表示动态从变量中获取key值
+</code></pre>
+<h2 id="一元运算符">一元运算符</h2>
+<p>您可以通过一元运算<code>-</code>符将数字取反，例如<code>${-234}</code>。要取反布尔表达式，可以使用<code>!</code>运算符，例如<code>${!true}</code>。</p>
+<h2 id="算术运算符">算术运算符</h2>
+<p>支持常见的算术运算符，例如<code>${1 + 2 * 3 / 4 % 2}</code></p>
+<h2 id="比较运算符">比较运算符</h2>
+<p><code>${23 &lt; 34}</code>，<code>${23 &lt;= 34}</code>，<code>${23 &gt; 34}</code>，<code>${23 &gt;= 34}</code>，<code>${ true != false }</code>，<code>${23 == 34}</code></p>
+<p>比较运算符结果为<code>boolean</code>类型</p>
+<h2 id="逻辑运算符">逻辑运算符</h2>
+<p>除了一元运算<code>!</code>符，您还可以使用<code>&amp;&amp;</code>和<code>||</code>。就像Java中一样，运算符也是一种短路运算符。如果<code>&amp;&amp;</code>左边计算为<code>false</code>，则不会计算右边。如果<code>||</code>左侧为true，则不会计算右边</p>
+<h2 id="三元运算符">三元运算符</h2>
+<p>三元运算符是<code>if</code>语句的简写形式，其工作方式类似于Java中，例如<code>${true ? &quot;yes&quot; : &quot;no&quot;}</code></p>
+<h2 id="变量">变量</h2>
+<pre><code class="language-javascript">${var}
+</code></pre>
+<p>通过<code>${变量名}</code>调用</p>
+<h2 id="调用方法">调用方法</h2>
+<pre><code class="language-javascript">${extract.xpath(resp.html,'//div[@id=abc]').regx('/\\d/').toInt()}
+</code></pre>
+<p>通过<code>${变量.方法名(参数1,参数2,....)}</code>进行调用</p>
+<h2 id="数组和map">数组和Map</h2>
+<pre><code class="language-javascript">${myArray[2]} ${myArray[indexVar]} ${myMap.get(&quot;key&quot;)} ${myMap[&quot;key&quot;]} ${myMap.get(keyVar)} ${myMap[keyVar]}
+</code></pre>
+<h2 id="链式调用">链式调用</h2>
+<p>与Java中一样，您可以无限嵌套成员，数组元素和映射访问</p>
+<pre><code class="language-javascript">${myObject.aField[12][&quot;key&quot;].someMethod(1, 2).anotherMethod()}
+</code></pre>
+<pre><code class="language-javascript">${extract.xpath(resp.html,'//div[@id=abc]').regx('/\\d/').toInt()}
+</code></pre>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

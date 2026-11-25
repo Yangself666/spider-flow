@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>IP代理池插件 · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="../course/quick-start.html">快速入门</a>
+				<a href="../course/expression.html">表达式语法</a>
+				<a href="../course/variable.html">内置变量</a>
+				<a href="../course/advanced.html">高级应用</a>
+				<a href="../course/plugin.html">插件开发</a>
+				<a href="../course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="selenium.html">selenium</a>
+				<a href="redis.html">redis</a>
+				<a href="mongodb.html">mongodb</a>
+				<a href="oss.html">oss</a>
+				<a href="ocr.html">ocr</a>
+				<a href="proxypool.html" aria-current="page">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="ip代理池插件">IP代理池插件</h1>
+<h2 id="引入ip代理池插件">引入IP代理池插件</h2>
+<ol>
+<li>首先到码云下载插件<a href="https://gitee.com/ssssssss-team/spider-flow-proxypool">点击下载</a>到本地并导入到工作空间或安装到maven库</li>
+<li>在spider-flow/spider-flow-web/pom.xml中引入插件</li>
+</ol>
+<pre><code class="language-xml">&lt;!-- 引入proxypool插件 --&gt;
+&lt;dependency&gt;
+	&lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+	&lt;artifactId&gt;spider-flow-proxypool&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h3 id="方法">方法</h3>
+<h3 id="proxypool-add">proxypool.add</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ip(String)</td>
+<td style="text-align:center">ip地址</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">port(Integer)</td>
+<td style="text-align:center">端口号</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">type(String)</td>
+<td style="text-align:center">类型(http,https)</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">anonymous(boolean)</td>
+<td style="text-align:center">是否是高匿</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="proxypool-http">proxypool.http</h3>
+<ul>
+<li>随机获取一个http代理</li>
+</ul>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">anonymous(boolean)</td>
+<td style="text-align:center">是否获取高匿代理</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：String ip:port</p>
+</aside>
+<h3 id="proxypool-https">proxypool.https</h3>
+<ul>
+<li>随机获取一个https代理</li>
+</ul>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">anonymous(boolean)</td>
+<td style="text-align:center">是否获取高匿代理</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：String ip:port</p>
+</aside>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

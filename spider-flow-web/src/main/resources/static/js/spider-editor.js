@@ -21,6 +21,7 @@ function SpiderEditor(options){
 		this.graph.setConnectable(true);
 		this.graph.setMultigraph(false);	//禁止重复连接
 		this.graph.setAllowLoops(true);		//允许自己连自己
+		this.configureDragScroll();
 		this.graph.isHtmlLabel = function(cell){
 			return !this.isSwimlane(cell);
 		}
@@ -51,11 +52,21 @@ function SpiderEditor(options){
 		});
 		this.keyHandler = new mxKeyHandler(this.graph);
 		this.keyHandler.getFunction = function(evt) {
-			if (evt != null)
-			{
-				return (mxEvent.isControlDown(evt) || (mxClient.IS_MAC && evt.metaKey)) ? this.controlKeys[evt.keyCode] : this.normalKeys[evt.keyCode];
+			if (!evt) {
+				return null;
 			}
-			return null;
+			var isShortcut = mxEvent.isControlDown(evt) || (mxClient.IS_MAC && evt.metaKey);
+			if (isShortcut && (evt.keyCode === 67 || evt.keyCode === 65)) {
+				var selection = window.getSelection();
+				var target = evt.target;
+				var isTextControl = target && target.closest && target.closest('input, textarea, [contenteditable], .message-content');
+				// 文本选区和输入控件使用浏览器自己的复制与全选快捷键
+				if (isTextControl || (selection && !selection.isCollapsed) ||
+					(target !== document.body && !_this.graph.container.contains(target))) {
+					return null;
+				}
+			}
+			return isShortcut ? this.controlKeys[evt.keyCode] : this.normalKeys[evt.keyCode];
 		}
 		this.bindKeyAction();
 		var _this = this;
@@ -64,6 +75,65 @@ function SpiderEditor(options){
 			_this.onSelectedCell(sender,evt);
 		});
 	}
+}
+SpiderEditor.prototype.configureDragScroll = function(){
+	var graph = this.graph;
+	var container = graph.container;
+	var edge = 40;
+	var timer = null;
+	var pointer;
+	// 让最靠下或靠右的节点外侧保留可滚动空间
+	graph.setBorder(80);
+
+	function stop(){
+		if(timer !== null){
+			window.clearInterval(timer);
+			timer = null;
+		}
+	}
+
+	function edgePoint(){
+		var point = mxUtils.convertPoint(container,pointer.getX(),pointer.getY());
+		var x = point.x - container.scrollLeft;
+		var y = point.y - container.scrollTop;
+		var width = container.clientWidth;
+		var height = container.clientHeight;
+		if(x < 0 || y < 0 || x > width || y > height){
+			return null;
+		}
+		return x < edge || y < edge || width - x < edge || height - y < edge ? point : null;
+	}
+
+	graph.addMouseListener({
+		mouseDown : stop,
+		mouseUp : stop,
+		mouseMove : function(sender,me){
+			pointer = me;
+			var handler = graph.graphHandler;
+			if(!handler.shape || !edgePoint()){
+				stop();
+				return;
+			}
+			if(timer === null){
+				timer = window.setInterval(function(){
+					var point = edgePoint();
+					if(!graph.isMouseDown || !handler.shape || !point){
+						stop();
+						return;
+					}
+					var left = container.scrollLeft;
+					var top = container.scrollTop;
+					graph.scrollPointToVisible(point.x,point.y,graph.autoExtend,edge);
+					if(left !== container.scrollLeft || top !== container.scrollTop){
+						// 滚动时复用节点拖动逻辑，保持预览和最终落点一致
+						var move = new mxMouseEvent(pointer.getEvent());
+						handler.mouseMove(graph,graph.updateMouseEvent(move,mxEvent.MOUSE_MOVE));
+					}
+				},50);
+			}
+		}
+	});
+	window.addEventListener('blur',stop);
 }
 SpiderEditor.prototype.bindKeyAction = function(){
 	var _this = this;
@@ -194,19 +264,28 @@ SpiderEditor.prototype.onSelectedCell = function(sender,evt){
 SpiderEditor.prototype.getModel = function(){
 	return this.graph.getModel();
 }
+function copyPlainText(text){
+	var copyText = document.createElement('textarea');
+	var focused = document.activeElement;
+	copyText.style = 'position:fixed;left:-9999px';
+	copyText.value = text;
+	copyText.readOnly = true;
+	document.body.appendChild(copyText);
+	try {
+		copyText.select();
+		return document.execCommand('copy');
+	} finally {
+		document.body.removeChild(copyText);
+		if (focused && focused !== document.body) {
+			focused.focus({preventScroll:true});
+		}
+	}
+}
 SpiderEditor.prototype.executeCopy = function(){
 	this.editor.execute('copy');
 	var cells = this.graph.getSelectionCells();
 	if(cells && cells.length > 0){
-		var copyText = document.createElement('textarea');
-		copyText.style = 'position:absolute;left:-99999999px';
-		document.body.appendChild(copyText);
-		copyText.innerHTML = mxUtils.getPrettyXml(new mxCodec().encode(cells));
-		copyText.readOnly = false;
-		copyText.select();
-		copyText.setSelectionRange(0, copyText.value.length);
-		document.execCommand("copy");
-		document.body.removeChild(copyText);
+		copyPlainText(mxUtils.getPrettyXml(new mxCodec().encode(cells)));
 	}
 }
 SpiderEditor.prototype.execute = function(action){

@@ -23,9 +23,14 @@ public class DataSourceUtils {
 	
 	private static DataSourceService dataSourceService;
 	
+	// 已保存的数据源可以继续使用旧驱动类名
+	public static String resolveDriverClassName(String className){
+		return "com.mysql.jdbc.Driver".equals(className) ? "com.mysql.cj.jdbc.Driver" : className;
+	}
+
 	public static DataSource createDataSource(String className,String url,String username,String password){
 		DruidDataSource datasource = new DruidDataSource();
-		datasource.setDriverClassName(className);
+		datasource.setDriverClassName(resolveDriverClassName(className));
 		datasource.setUrl(url);
 		datasource.setUsername(username);
 		datasource.setPassword(password);

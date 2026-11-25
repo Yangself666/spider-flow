@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>mongodb · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="../course/quick-start.html">快速入门</a>
+				<a href="../course/expression.html">表达式语法</a>
+				<a href="../course/variable.html">内置变量</a>
+				<a href="../course/advanced.html">高级应用</a>
+				<a href="../course/plugin.html">插件开发</a>
+				<a href="../course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="selenium.html">selenium</a>
+				<a href="redis.html">redis</a>
+				<a href="mongodb.html" aria-current="page">mongodb</a>
+				<a href="oss.html">oss</a>
+				<a href="ocr.html">ocr</a>
+				<a href="proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="mongodb">mongodb</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#%E5%BC%95%E5%85%A5mongdob%E6%8F%92%E4%BB%B6">引入Mongdob插件</a></li><li><a href="#%E5%AE%9A%E4%B9%89mongodb%E6%95%B0%E6%8D%AE%E6%BA%90">定义Mongodb数据源</a></li><li><a href="#%E5%BC%80%E5%A7%8B%E4%BD%BF%E7%94%A8">开始使用</a></li></ul></details>
+<h2 id="引入mongdob插件">引入Mongdob插件</h2>
+<ol>
+<li>首先到码云下载插件<a href="https://gitee.com/ssssssss-team/spider-flow-mongodb">点击下载</a>到本地并导入到工作空间或安装到maven库</li>
+<li>在spider-flow/spider-flow-web/pom.xml中引入插件</li>
+</ol>
+<pre><code class="language-xml">&lt;!-- 引入mongodb插件 --&gt;
+&lt;dependency&gt;
+	&lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+	&lt;artifactId&gt;spider-flow-mongodb&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<h2 id="定义mongodb数据源">定义Mongodb数据源</h2>
+<ul>
+<li>host：mongodb host/ip</li>
+<li>alias(别名)：特别重要，后续使用时都会使用到别名</li>
+<li>port：mongodb端口号</li>
+<li>用户名/密码：mongodb用户名密码，没有不填即可</li>
+<li>数据库名称，mongodb 数据库名</li>
+</ul>
+<h2 id="开始使用">开始使用</h2>
+<aside class="tip">
+<p>可以在所有支持表达式的地方使用</p>
+</aside>
+<pre><code class="language-javascript">//其中xxxx是之前配置的别名
+//插入数据
+${mongodb.xxxx.collectionName.insert([{key : value},{key : value}])}
+${mongodb.xxxx.collectionName.insert({key : value})}
+</code></pre>
+<pre><code class="language-javascript">//查找数据
+${mongodb.xxxx.collectionName.find({key : value}).skip(2).limit(3).list()}
+</code></pre>
+<pre><code class="language-javascript">//修改数据
+${mongodb.xxxx.collectionName.update({key : oldValue},{key : newValue})}
+${mongodb.xxxx.collectionName.updateMany({key : oldValue},{key : newValue})}
+</code></pre>
+<pre><code class="language-javascript">//查询总数
+${mongodb.xxxx.collectionName.count({key : value})}
+${mongodb.xxxx.collectionName.count()}
+</code></pre>
+<pre><code class="language-javascript">//删除数据
+${mongodb.xxxx.collectionName.remove({key : value})}
+${mongodb.xxxx.collectionName.removeOne({key : value})}
+</code></pre>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

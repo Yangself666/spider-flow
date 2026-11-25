@@ -2,6 +2,7 @@ package org.spiderflow.model;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,8 @@ public class Grammer {
 	private String function;
 	
 	private List<String> returns;
+
+	private List<String> parameters;
 	
 	public String getOwner() {
 		return owner;
@@ -71,14 +74,29 @@ public class Grammer {
 	public void setReturns(List<String> returns) {
 		this.returns = returns;
 	}
+
+	public List<String> getParameters() {
+		return parameters;
+	}
 	
 	public static List<Grammer> findGrammers(Class<?> clazz,String function,String owner,boolean mustStatic){
+		return findGrammers(clazz, function, owner, mustStatic, 0);
+	}
+
+	public static List<Grammer> findGrammers(Class<?> clazz,String function,String owner,boolean mustStatic,int firstParameter){
 		Method[] methods = clazz.getDeclaredMethods();
 		List<Grammer> grammers = new ArrayList<>();
 		for (Method method : methods) {
 			if(Modifier.isPublic(method.getModifiers()) && (Modifier.isStatic(method.getModifiers())||!mustStatic)){
 				Grammer grammer = new Grammer();
 				grammer.setMethod(method.getName());
+				grammer.parameters = new ArrayList<>();
+				Parameter[] parameters = method.getParameters();
+				for (int i = firstParameter; i < parameters.length; i++) {
+					Parameter parameter = parameters[i];
+					String type = parameter.getType().getSimpleName();
+					grammer.parameters.add(parameter.isNamePresent() ? type + " " + parameter.getName() : type);
+				}
 				Comment comment = method.getAnnotation(Comment.class);
 				if(comment != null){
 					grammer.setComment(comment.value());

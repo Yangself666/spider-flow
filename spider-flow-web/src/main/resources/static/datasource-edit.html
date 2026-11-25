@@ -35,17 +35,57 @@
    			</div>
    		</div>
 		<div class="layui-form-item">
-   			<label class="layui-form-label">DriverClassName</label>
-   			<div class="layui-input-block">
-   				<input type="text" name="driverClassName" placeholder="请输入DriverClassName" autocomplete="off" class="layui-input" lay-verify="required"/>
-   			</div>
-   		</div>
-		<div class="layui-form-item">
-   			<label class="layui-form-label">数据库连接</label>
-   			<div class="layui-input-block">
-   				<input type="text" name="jdbcUrl" placeholder="请输入数据库连接" autocomplete="off" class="layui-input"  lay-verify="required"/>
-   			</div>
-   		</div>
+			<label class="layui-form-label" for="driverClassName">数据库驱动</label>
+			<div class="layui-input-block">
+				<select id="driverClassName" name="driverClassName" lay-filter="driverClassName">
+					<option value="com.mysql.cj.jdbc.Driver">MySQL</option>
+					<option value="custom">其他 JDBC 驱动</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-form-item" id="custom-driver" style="display:none">
+			<label class="layui-form-label" for="customDriverClassName">驱动类名</label>
+			<div class="layui-input-block">
+				<input type="text" id="customDriverClassName" name="customDriverClassName" placeholder="请输入 JDBC 驱动类名" class="layui-input" disabled/>
+			</div>
+		</div>
+		<div id="mysql-connection">
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="mysqlHost">主机</label>
+				<div class="layui-input-block">
+					<input type="text" id="mysqlHost" name="mysqlHost" placeholder="例如 localhost 或 db.example.com" class="layui-input"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="mysqlPort">端口</label>
+				<div class="layui-input-block">
+					<input type="number" id="mysqlPort" name="mysqlPort" value="3306" min="1" max="65535" step="1" class="layui-input"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="mysqlDatabase">数据库名</label>
+				<div class="layui-input-block">
+					<input type="text" id="mysqlDatabase" name="mysqlDatabase" placeholder="例如 spiderflow" class="layui-input"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label" for="mysqlParameters">连接参数</label>
+				<div class="layui-input-block">
+					<input type="text" id="mysqlParameters" name="mysqlParameters" placeholder="选填，例如 connectTimeout=5000&amp;socketTimeout=10000" class="layui-input"/>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item" id="mysql-url-mode">
+			<div class="layui-input-block">
+				<input type="checkbox" name="mysqlRawUrl" value="1" lay-filter="mysqlRawUrl" lay-skin="primary" title="使用完整 JDBC URL"/>
+			</div>
+		</div>
+		<div class="layui-form-item" id="jdbc-url-field" style="display:none">
+			<label class="layui-form-label" for="jdbcUrl">JDBC URL</label>
+			<div class="layui-input-block">
+				<input type="text" id="jdbcUrl" name="jdbcUrl" placeholder="请输入完整 JDBC URL" class="layui-input" disabled/>
+			</div>
+		</div>
    		<div class="layui-form-item">
    			<label class="layui-form-label">用户名</label>
    			<div class="layui-input-block">
@@ -67,6 +107,104 @@
 	<script type="text/javascript">
 		var $ = layui.$;
 		var dsId = getQueryString('id');
+		var mysqlDriver = 'com.mysql.cj.jdbc.Driver';
+		function showConnectionFields(driver,rawUrl){
+			var custom = driver === 'custom';
+			var mysql = driver === mysqlDriver;
+			var structured = mysql && !rawUrl;
+			$('#custom-driver').toggle(custom).find('input').prop('disabled',!custom);
+			$('#mysql-url-mode').toggle(mysql).find('input').prop('disabled',!mysql);
+			$('#mysql-connection').toggle(structured).find('input').prop('disabled',!structured);
+			$('#jdbc-url-field').toggle(!structured).find('input').prop('disabled',structured);
+		}
+		function isMysqlPort(port){
+			return /^\d+$/.test(port) && Number(port) >= 1 && Number(port) <= 65535;
+		}
+		function isMysqlParameters(parameters){
+			return !parameters || parameters.split('&').every(function(parameter){
+				return /^[^=&\s?#]+=[^#\r\n]*$/.test(parameter);
+			});
+		}
+		function normalizeMysqlHost(host){
+			if(!host || /[\s/?#@\\,()=%]/.test(host)){
+				return '';
+			}
+			if(host.indexOf(':') !== -1 && host.charAt(0) !== '['){
+				host = '[' + host + ']';
+			}
+			if(/[\[\]]/.test(host) && !/^\[[^\[\]]+\]$/.test(host)){
+				return '';
+			}
+			try {
+				return new URL('http://' + host).hostname;
+			} catch (error) {
+				return '';
+			}
+		}
+		function parseMysqlUrl(url){
+			var match = /^jdbc:mysql:\/\/(\[[^\]]+\]|[^:/?#[\],()]+)(?::(\d+))?(?:\/([^/?#]*))?(?:\?([^#]*))?$/.exec(url || '');
+			if(!match || !normalizeMysqlHost(match[1]) || (match[2] && !isMysqlPort(match[2])) || !isMysqlParameters(match[4])){
+				return null;
+			}
+			try {
+				return {
+					mysqlHost : match[1],
+					mysqlPort : match[2] || '3306',
+					mysqlDatabase : decodeURIComponent((match[3] || '').replace(/\+/g,' ')),
+					mysqlParameters : match[4] || ''
+				};
+			} catch (error) {
+				return null;
+			}
+		}
+		function buildMysqlUrl(fields){
+			var host = normalizeMysqlHost($.trim(fields.mysqlHost || ''));
+			var port = $.trim(fields.mysqlPort || '') || '3306';
+			var parameters = $.trim(fields.mysqlParameters || '').replace(/^\?/,'');
+			var error;
+			if(!host){
+				error = '请输入有效的 MySQL 主机名或 IP 地址';
+			}else if(!isMysqlPort(port)){
+				error = 'MySQL 端口必须是 1 到 65535 之间的整数';
+			}else if(!isMysqlParameters(parameters)){
+				error = '连接参数请使用 key=value 格式，多项用 & 分隔';
+			}
+			if(error){
+				layui.layer.msg(error);
+				return '';
+			}
+			var database = encodeURIComponent(fields.mysqlDatabase || '');
+			return 'jdbc:mysql://' + host + ':' + Number(port) + '/' + database + (parameters ? '?' + parameters : '');
+		}
+		function readDataSource(fields){
+			var driver = fields.driverClassName === 'custom' ? $.trim(fields.customDriverClassName || '') : fields.driverClassName;
+			if(!driver){
+				layui.layer.msg('请输入 JDBC 驱动类名');
+				return null;
+			}
+			var structured = fields.driverClassName === mysqlDriver && !fields.mysqlRawUrl;
+			var url = structured ? buildMysqlUrl(fields) : $.trim(fields.jdbcUrl || '');
+			if(!url){
+				if(!structured){
+					layui.layer.msg('请输入完整 JDBC URL');
+				}
+				return null;
+			}
+			return {
+				name : fields.name,
+				driverClassName : driver,
+				jdbcUrl : url,
+				username : fields.username,
+				password : fields.password
+			};
+		}
+		layui.form.on('select(driverClassName)',function(event){
+			showConnectionFields(event.value,$('input[name=mysqlRawUrl]').prop('checked'));
+		});
+		layui.form.on('checkbox(mysqlRawUrl)',function(event){
+			showConnectionFields(mysqlDriver,event.elem.checked);
+		});
+		layui.form.render(null,'form');
 		if(dsId){
 			$.ajax({
 				url : 'datasource/get',
@@ -74,22 +212,34 @@
 					id : dsId
 				},
 				success : function(data) {
+					var driver = data.driverClassName;
+					if(!driver || driver === 'com.mysql.jdbc.Driver' || driver === mysqlDriver){
+						data.driverClassName = mysqlDriver;
+						var fields = parseMysqlUrl(data.jdbcUrl);
+						if(fields){
+							$.extend(data,fields);
+						}
+						// 多主机等高级连接保留完整 URL，避免改写已有配置
+						data.mysqlRawUrl = Boolean(data.jdbcUrl && !fields);
+					}else{
+						data.driverClassName = 'custom';
+						data.customDriverClassName = driver;
+					}
+					showConnectionFields(data.driverClassName,data.mysqlRawUrl);
 					layui.form.val('form', data);
 				}
 			});
 		}
-		layui.form.on('submit(save)',function(){
+		layui.form.on('submit(save)',function(event){
+			var data = readDataSource(event.field);
+			if(!data){
+				return false;
+			}
+			data.id = dsId;
 			$.ajax({
 				url : 'datasource/save',
 				type : 'post',
-				data : {
-					id : dsId,
-					name : $("input[name=name]").val(),
-					driverClassName : $("input[name=driverClassName]").val(),
-					jdbcUrl : $("input[name=jdbcUrl]").val(),
-					username : $("input[name=username]").val(),
-					password : $("input[name=password]").val()
-				},
+				data : data,
 				success : function(json){
 					layui.layer.msg('保存成功',{
 						time : 800
@@ -103,16 +253,15 @@
 			})
 			return false;
 		})
-		layui.form.on('submit(test)', function () {
+		layui.form.on('submit(test)', function (event) {
+			var data = readDataSource(event.field);
+			if(!data){
+				return false;
+			}
 			sf.ajax({
 				url : 'datasource/test',
 				type : 'post',
-				data : {
-					driverClassName : $("input[name=driverClassName]").val(),
-					jdbcUrl : $("input[name=jdbcUrl]").val(),
-					username : $("input[name=username]").val(),
-					password : $("input[name=password]").val()
-				},
+				data : data,
 				success : function(json){
 					layui.layer.msg(json.message);
 				},

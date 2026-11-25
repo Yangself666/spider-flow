@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>spider-flow使用说明 · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="favicon.ico">
+	<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="index.html">SpiderFlow 帮助文档</a>
+		<a href="../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="index.html">简介</a>
+				<a href="install.html">安装部署</a>
+				<a href="course/quick-start.html">快速入门</a>
+				<a href="course/expression.html">表达式语法</a>
+				<a href="course/variable.html">内置变量</a>
+				<a href="course/advanced.html">高级应用</a>
+				<a href="course/plugin.html">插件开发</a>
+				<a href="course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="function/extra.html">抽取函数</a>
+				<a href="function/base64.html">base64</a>
+				<a href="function/date.html">date</a>
+				<a href="function/file.html">file</a>
+				<a href="function/json.html">json</a>
+				<a href="function/list.html">list</a>
+				<a href="function/random.html">random</a>
+				<a href="function/string.html">string</a>
+				<a href="function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="classes/explain.html">说明</a>
+				<a href="classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="classes/string.html">java.lang.String</a>
+				<a href="classes/date.html">java.util.Date</a>
+				<a href="classes/object.html">java.lang.Object</a>
+				<a href="classes/list.html">java.util.List</a>
+				<a href="classes/map.html">java.util.Map</a>
+				<a href="classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="plugins/selenium.html">selenium</a>
+				<a href="plugins/redis.html">redis</a>
+				<a href="plugins/mongodb.html">mongodb</a>
+				<a href="plugins/oss.html">oss</a>
+				<a href="plugins/ocr.html">ocr</a>
+				<a href="plugins/proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="document.html" aria-current="page">spider-flow使用说明</a>
+				<a href="changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="spider-flow使用说明">spider-flow使用说明</h1>
+<h4 id="启动">启动</h4>
+<ul>
+<li>本项目为SpringBoot项目,运行SpiderApplication类,访问<a href="http://localhost:8088/">http://localhost:8088/</a>即可</li>
+</ul>
+<h4 id="演示站点">演示站点</h4>
+<p><a href="http://39.105.125.219:8088/">点击跳转</a></p>
+<blockquote>
+<p>服务器配置较低,如有卡顿请谅解</p>
+</blockquote>
+<h4 id="抓取页面">抓取页面</h4>
+<ul>
+<li>循环变量：用来定义循环变量，主要目的是抓取多个同类URL,如：projectIndex</li>
+<li>循环次数：定义循环次数，可使用${}从变量中获取值，如：10</li>
+<li>起始URL：抓取地址，可使用${}从变量中获取值如：<a href="https://gitee.com/$%7BprojectUrls%5BprojectIndex%5D%7D">https://gitee.com/${projectUrls[projectIndex]}</a></li>
+<li>请求方法：GET、POST</li>
+<li>请求参数：用来设置请求参数，可添加多个，参数值处可使用${}来获取值</li>
+<li>请求header：用来设置请求header，可添加多个，header值处可使用${}来获取值</li>
+<li>代理：host:port</li>
+</ul>
+<h4 id="定义变量">定义变量</h4>
+<ul>
+<li>变量名：定义变量名称</li>
+<li>变量值：<code>可使用${}从变量中获取值如：${selectors(resp.html,'.categorical-project-card a','attr','href')}</code></li>
+</ul>
+<h4 id="定义数据源">定义数据源</h4>
+<ul>
+<li>数据库类型，目前仅支持Mysql(其它驱动未引入至项目中)</li>
+<li>数据库连接，如：jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&amp;characterEncoding=utf-8</li>
+<li>用户名，如：root</li>
+<li>密码,如：123456</li>
+</ul>
+<blockquote>
+<p>需要注意的是，此处不支持${}语法</p>
+</blockquote>
+<h4 id="输出">输出</h4>
+<ul>
+<li>输出项，该值为页面中显示表格的列名</li>
+<li>输出值，该值为页面中显示表格单元格值，语法同样支持${}</li>
+</ul>
+<h4 id="执行sql">执行SQL</h4>
+<ul>
+<li>数据源，选择之前定义好的数据源</li>
+<li>语句类型，select/insert/update/delete</li>
+<li>SQL语句，如<code>INSERT INTO gitee_gvp(project_name, project_link,project_desc) VALUES (#${projectNames[projectIndex]}#,#${projectUrls[projectIndex]}#,#${projectDesc}#)</code></li>
+</ul>
+<blockquote>
+<p>需要注意的是，SQL语句不支持${}语法，但是参数是支持的，另外参数需要用##包起来</p>
+</blockquote>
+<h4 id="箭头">箭头</h4>
+<ul>
+<li>条件，每个箭头都可以添加条件，当条件成立时，才流向所指向的节点，不写即不判断，直接流向下一个节点</li>
+</ul>
+<h4 id="内置变量">内置变量</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>变量名称</th>
+<th>变量值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>resp</td>
+<td>HttpResponse对象</td>
+</tr>
+<tr>
+<td>rs</td>
+<td>SQL执行结果，类型：int或List&lt;Map&lt;String,Object&gt;&gt;</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="httpresponse对象">HttpResponse对象</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段类型</th>
+<th>字段描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>html</td>
+<td>String</td>
+<td>页面HTML</td>
+</tr>
+<tr>
+<td>json</td>
+<td>JSONObject/JSONArray</td>
+<td>内容转json结果</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>byte[]</td>
+<td>二进制结果</td>
+</tr>
+<tr>
+<td>cookies</td>
+<td>Map&lt;String,String&gt;</td>
+<td>cookies</td>
+</tr>
+<tr>
+<td>headers</td>
+<td>Map&lt;String,String&gt;</td>
+<td>headers</td>
+</tr>
+<tr>
+<td>statusCode</td>
+<td>int</td>
+<td>HTTP状态码</td>
+</tr>
+</tbody>
+</table></div>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

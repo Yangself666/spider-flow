@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.TriggerBuilder;
@@ -50,11 +51,18 @@ public class SpiderFlowService extends ServiceImpl<SpiderFlowMapper, SpiderFlow>
 	@Value("${spider.workspace}")
 	private String workspace;
 
+	@Value("${spider.job.enable:true}")
+	private boolean spiderJobEnable;
+
 	//项目启动后自动查询需要执行的任务进行爬取
 	@PostConstruct
 	private void initJobs(){
 		//清空所有任务下次执行时间
 		sfMapper.resetNextExecuteTime();
+		if (!spiderJobEnable) {
+			logger.info("定时任务已通过 spider.job.enable 配置停用");
+			return;
+		}
 		//获取启用corn的任务
 		List<SpiderFlow> spiderFlows = sfMapper.selectList(new QueryWrapper<SpiderFlow>().eq("enabled", "1"));
 		if(spiderFlows != null && !spiderFlows.isEmpty()){
@@ -95,7 +103,7 @@ public class SpiderFlowService extends ServiceImpl<SpiderFlowMapper, SpiderFlow>
 		sfMapper.resetCornExpression(id, cron, trigger.getFireTimeAfter(null));
 		spiderJobManager.remove(id);
 		SpiderFlow spiderFlow = getById(id);
-		if("1".equals(spiderFlow.getEnabled()) && StringUtils.isNotEmpty(spiderFlow.getCron())){
+		if(spiderJobEnable && "1".equals(spiderFlow.getEnabled()) && StringUtils.isNotEmpty(spiderFlow.getCron())){
 			spiderJobManager.addJob(spiderFlow);
 		}
 	}
@@ -114,7 +122,7 @@ public class SpiderFlowService extends ServiceImpl<SpiderFlowMapper, SpiderFlow>
 			sfMapper.updateSpiderFlow(spiderFlow.getId(), spiderFlow.getName(), spiderFlow.getXml());
 			spiderJobManager.remove(spiderFlow.getId());
 			spiderFlow = getById(spiderFlow.getId());
-			if("1".equals(spiderFlow.getEnabled()) && StringUtils.isNotEmpty(spiderFlow.getCron())){
+			if(spiderJobEnable && "1".equals(spiderFlow.getEnabled()) && StringUtils.isNotEmpty(spiderFlow.getCron())){
 				spiderJobManager.addJob(spiderFlow);
 			}
 		}else{//insert 任务
@@ -144,15 +152,31 @@ public class SpiderFlowService extends ServiceImpl<SpiderFlowMapper, SpiderFlow>
 		sfMapper.insertSpiderFlow(new_id, spiderFlow.getName() + "-copy", spiderFlow.getXml());
 	}
 
-	public void start(String id){
-		spiderJobManager.remove(id);
+	public boolean start(String id){
 		SpiderFlow spiderFlow = getById(id);
-		Date nextExecuteTime = spiderJobManager.addJob(spiderFlow);
-		if (nextExecuteTime != null) {
-			spiderFlow.setNextExecuteTime(nextExecuteTime);
-			sfMapper.updateById(spiderFlow);
-			sfMapper.resetSpiderStatus(id, "1");
+		if (!spiderJobEnable || spiderFlow == null || StringUtils.isBlank(spiderFlow.getCron())
+				|| !CronExpression.isValidExpression(spiderFlow.getCron())) {
+			return false;
 		}
+		if (!spiderJobManager.remove(id)) {
+			return false;
+		}
+		// Quartz 保存流程快照，注册前先写入即将生效的状态
+		spiderFlow.setEnabled("1");
+		Date nextExecuteTime = spiderJobManager.addJob(spiderFlow);
+		if (nextExecuteTime == null) {
+			return false;
+		}
+		try {
+			if (sfMapper.resetSpiderSchedule(id, nextExecuteTime) > 0) {
+				return true;
+			}
+		} catch (RuntimeException e) {
+			spiderJobManager.remove(id);
+			throw e;
+		}
+		spiderJobManager.remove(id);
+		return false;
 	}
 
 	public void run(String id){

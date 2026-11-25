@@ -1,6 +1,5 @@
 package org.spiderflow.model;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.spiderflow.context.SpiderContext;
 import org.spiderflow.core.serializer.FastJsonSerializer;
@@ -46,7 +45,7 @@ public class SpiderWebSocketContext extends SpiderContext {
 
     public <T> void write(WebSocketEvent<T> event) {
         try {
-            String message = JSON.toJSONString(event, FastJsonSerializer.serializeConfig);
+            String message = FastJsonSerializer.toDisplayJson(event);
             if(session.isOpen()){
                 synchronized (session){
                     session.getBasicRemote().sendText(message);

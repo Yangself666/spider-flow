@@ -40,6 +40,7 @@ public class DataSourceController {
 		if(StringUtils.isNotBlank(dataSource.getId())){
 			DataSourceUtils.remove(dataSource.getId());
 		}
+		dataSource.setDriverClassName(DataSourceUtils.resolveDriverClassName(dataSource.getDriverClassName()));
 		dataSourceService.saveOrUpdate(dataSource);
 		return dataSource.getId();
 	}
@@ -67,7 +68,7 @@ public class DataSourceController {
 		}
 		Connection connection = null;
 		try {
-			Class.forName(dataSource.getDriverClassName());
+			Class.forName(DataSourceUtils.resolveDriverClassName(dataSource.getDriverClassName()));
 			String url = dataSource.getJdbcUrl();
 			String username = dataSource.getUsername();
 			String password = dataSource.getPassword();

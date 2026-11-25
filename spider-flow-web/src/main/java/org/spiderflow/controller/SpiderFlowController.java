@@ -23,6 +23,7 @@ import org.spiderflow.model.Shape;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,7 +88,8 @@ public class SpiderFlowController {
 
 		for (FunctionExtension extension : functionExtensions) {
 			String owner = extension.support().getSimpleName();
-			grammers.addAll(Grammer.findGrammers(extension.getClass(),null,owner,true));
+			// 扩展方法的第一个 Java 参数是表达式中点号左边的对象
+			grammers.addAll(Grammer.findGrammers(extension.getClass(),null,owner,true,1));
 		}
 		for (Grammerable grammerable : grammerables) {
 			grammers.addAll(grammerable.grammers());
@@ -139,8 +141,11 @@ public class SpiderFlowController {
 	}
 
 	@RequestMapping("/start")
-	public void start(String id){
-		spiderFlowService.start(id);
+	public ResponseEntity<Void> start(String id){
+		if (spiderFlowService.start(id)) {
+			return ResponseEntity.ok().build();
+		}
+		return ResponseEntity.status(HttpStatus.CONFLICT).build();
 	}
 
 	@RequestMapping("/stop")

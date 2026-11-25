@@ -20,6 +20,15 @@ function renderCodeMirror(){
 			scrollbarStyle : 'null',	//隐藏滚动条
 		});
 		initHint(cm);
+		if($dom.hasClass('layui-input-block')){
+			$dom.addClass('expandable-code-editor');
+			var $expand = $('<button type="button" class="layui-btn layui-btn-primary btn-expand-editor" title="放大编辑" aria-label="放大编辑"><i class="layui-icon layui-icon-screen-full" aria-hidden="true"></i></button>');
+			$expand.on('click',function(){
+				var label = $.trim($dom.prev('.layui-form-label').text());
+				openExpandedEditor(cm,label,$expand);
+			});
+			$dom.append($expand);
+		}
 		codeMirrorInstances[$(this).attr('codemirror')] = cm;
 		cm.on('change',function(){
 			$dom.attr('data-value',cm.getValue());
@@ -30,6 +39,35 @@ function renderCodeMirror(){
 			serializeForm();
 		});
 		codeMirrorInstances[$(this).attr('codemirror')] = cm;
+	});
+}
+function openExpandedEditor(editor,label,$expand){
+	var source = editor.getDoc();
+	var linked = source.linkedDoc({sharedHist:true});
+	var viewport = document.documentElement;
+	$expand.prop('disabled',true);
+	layui.layer.open({
+		type : 1,
+		title : label ? '放大编辑 · ' + $('<span>').text(label).html() : '放大编辑',
+		content : '<div class="expanded-code-editor"></div>',
+		skin : 'codemirror',
+		area : [Math.min(800,viewport.clientWidth - 24) + 'px', Math.min(440,viewport.clientHeight - 24) + 'px'],
+		success : function(dom){
+			// 共享文档内容与撤销历史，原字段继续参与流程表单保存
+			var expanded = CodeMirror(dom.find('.expanded-code-editor')[0],{
+				value : linked,
+				mode : editor.getOption('mode'),
+				theme : editor.getOption('theme'),
+				placeholder : editor.getOption('placeholder')
+			});
+			initHint(expanded);
+			expanded.setSelections(source.listSelections());
+			expanded.focus();
+		},
+		end : function(){
+			source.unlinkDoc(linked);
+			$expand.prop('disabled',false);
+		}
 	});
 }
 function getCellData(cellId,keys){
@@ -253,17 +291,6 @@ $(function(){
 				$dom.scrollLeft($dom.scrollLeft()+60);
 			}
 			return false;
-		}).on("dblclick",".layui-input-block[codemirror]",function(){
-			if($(this).parent().hasClass("layui-layer-content")){
-				return;
-			}
-			layui.layer.open({
-				type : 1,
-				title : '请输入'+$(this).prev().html()+'表达式',
-				content : $(this),
-				skin : 'codemirror',
-				area : '800px'
-			})
 		}).on("blur","input,textarea",function(){
 			serializeForm();
 		}).on("click",".history-version li",function(){
@@ -734,7 +761,7 @@ function bindToolbarClickAction(editor){
 		$('.main-container').removeClass('right');
 		$('.properties-container').height(200).width('100%');
 		$('.sidebar-container').css('bottom','200px');
-		$('.editor-container').css('bottom','200px');
+		$('.editor-container').css({bottom:'200px',right:''});
 		$('.main-container .resize-container').attr('style','left:0px;top:auto;bottom:190px');
 		var resize = $('.resize-container')[0]
 		resize.onmousedown = function(e){
@@ -1050,20 +1077,12 @@ function runSpider(debug){
 							if(o1.top > o2.top + $parent.height()){
 								$parent[0].scrollTop = o1.top - o2.top;
 							}
-							var msg = message.value;
-							var isJson = Array.isArray(msg) || typeof msg == 'object';
-							if(!isJson){
-								var temp = document.createElement("div");
-								(temp.textContent != null) ? (temp.textContent = msg) : (temp.innerText = msg);
-								msg = temp.innerHTML;
-								temp = null;
-							}
-							var content = '<div class="message-content" style="padding:10px;'+(isJson ? '':'font-weight: bold;font-family:Consolas;font-size:12px;')+'">'+(isJson ? '' : msg.replace(/\n/g,'<br>')).replace(/ /g,'&nbsp;').replace(/\t/g,'&nbsp;&nbsp;&nbsp;&nbsp;')+'</div>';
-							var tooltip = bindTooltip(content,selector);
-							if(isJson){
-								var $dom = $(tooltip.dom).find(".message-content");
-								jsonTree.create(msg,$dom[0]);
-							}
+							var value = message.value;
+							var isJson = value !== null && typeof value === 'object';
+							var tooltip = bindTooltip('<div class="message-content" tabindex="0"></div>',selector);
+							var content = $(tooltip.dom).find(".message-content")[0];
+							var text = isJson ? JSON.stringify(value, null, 2) : String(value);
+							renderCopyableValue(content, text, isJson ? value : null);
 						}
 					}
 				});
@@ -1089,42 +1108,71 @@ function bindTooltip(content,selector){
 	}
 
 }
+function renderCopyableValue(container,text,json){
+	var button = document.createElement('button');
+	button.type = 'button';
+	button.className = 'layui-btn layui-btn-primary layui-btn-xs';
+	button.textContent = '复制内容';
+	button.onclick = function(){
+		layui.layer.msg(copyPlainText(text) ? '已复制' : '复制失败，请选中文本后复制');
+	};
+	container.appendChild(button);
+	var value = document.createElement(json ? 'div' : 'pre');
+	value.className = 'message-value';
+	container.appendChild(value);
+	if(json){
+		jsonTree.create(json,value);
+	}else{
+		value.textContent = text;
+	}
+}
 //最近点击打开的弹窗
 var index;
 function onCanvasViewerClick(e,source){
-	var msg = e.text;
-	var json;
-	try{
-		json = JSON.parse(msg);
-		if(!(Array.isArray(json) || typeof json == 'object')){
-			json = null;
+	var text = e.text;
+	var json = null;
+	try {
+		var value = JSON.parse(text);
+		if(value !== null && typeof value === 'object'){
+			json = value;
 		}
-	}catch(e){
-		
-	}
-	if(!json){
-		var temp = document.createElement("div");
-		(temp.textContent != null) ? (temp.textContent = msg) : (temp.innerText = msg);
-		msg = temp.innerHTML;
-		temp = null;
+	} catch (ignored) {
+		// 普通文本直接显示
 	}
 	layer.close(index);
+	var viewport = document.documentElement;
+	var width = Math.min(700, Math.floor(viewport.clientWidth * 0.9));
+	var height = Math.min(json ? 500 : 400, Math.floor(viewport.clientHeight * 0.85));
 	index = layer.open({
 	  type : 1,
 	  title : source +'内容',
-	  content: '<div class="message-content" style="padding:10px;'+(json ? '':'font-weight: bold;font-family:Consolas;font-size:12px;')+'">'+(json ? '' : msg.replace(/\n/g,'<br>')).replace(/ /g,'&nbsp;').replace(/\t/g,'&nbsp;&nbsp;&nbsp;&nbsp;')+'</div>',
+	  skin : 'layer-value-preview',
+	  content : '<div class="message-content" tabindex="0"></div>',
 	  shade : 0,
-	  area : json ? ['700px','500px'] : 'auto',
+	  area : [width + 'px', height + 'px'],
 	  maxmin : true,
-	  maxWidth : (json ? undefined : 700),
-	  maxHeight : (json ? undefined : 400),
-	  success : function(dom,index){
-		 var $dom = $(dom).find(".message-content");
-		 if(json){
-			 jsonTree.create(json,$dom[0]);
-		 }
+	  resize : false,
+	  moveOut : true,
+	  moveEnd : function(dom){
+		 var titleHeight = dom.find('.layui-layer-title').outerHeight();
+		 dom.css({
+			 left : Math.max(0, Math.min(parseFloat(dom.css('left')), viewport.clientWidth - dom.outerWidth())),
+			 top : Math.max(0, Math.min(parseFloat(dom.css('top')), viewport.clientHeight - titleHeight))
+		 });
+	  },
+	  success : function(dom){
+		 var content = $(dom).find(".message-content")[0];
+		 renderCopyableValue(content, text, json);
+		 var title = dom.find('.layui-layer-title')[0];
+		 // 最大化时保留视口位置和窗口控件
+		 title.addEventListener('mousedown',function(event){
+			 if(dom.find('.layui-layer-max').hasClass('layui-layer-maxmin')){
+				 event.stopImmediatePropagation();
+			 }
+		 },true);
+		 content.focus({preventScroll:true});
 	  }
-	}); 
+	});
 }
 function createWebSocket(options){
 	options = options || {};

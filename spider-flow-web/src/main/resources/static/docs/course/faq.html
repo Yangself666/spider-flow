@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>常见问题 · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="quick-start.html">快速入门</a>
+				<a href="expression.html">表达式语法</a>
+				<a href="variable.html">内置变量</a>
+				<a href="advanced.html">高级应用</a>
+				<a href="plugin.html">插件开发</a>
+				<a href="faq.html" aria-current="page">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="../function/extra.html">抽取函数</a>
+				<a href="../function/base64.html">base64</a>
+				<a href="../function/date.html">date</a>
+				<a href="../function/file.html">file</a>
+				<a href="../function/json.html">json</a>
+				<a href="../function/list.html">list</a>
+				<a href="../function/random.html">random</a>
+				<a href="../function/string.html">string</a>
+				<a href="../function/url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="../plugins/selenium.html">selenium</a>
+				<a href="../plugins/redis.html">redis</a>
+				<a href="../plugins/mongodb.html">mongodb</a>
+				<a href="../plugins/oss.html">oss</a>
+				<a href="../plugins/ocr.html">ocr</a>
+				<a href="../plugins/proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="常见问题">常见问题</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E4%B8%8D%E4%BC%9A%E8%BF%90%E8%A1%8C">定时任务不会运行</a></li><li><a href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%87%BA%E7%8E%B0%E6%A3%80%E6%B5%8B%E5%88%B0%E5%8F%AF%E8%83%BD%E5%87%BA%E7%8E%B0%E6%AD%BB%E5%BE%AA%E7%8E%AF-%E6%B5%8B%E8%AF%95%E7%BB%88%E6%AD%A2">为什么出现检测到可能出现死循环,测试终止</a></li><li><a href="#%E7%82%B9%E5%87%BB%E6%B5%8B%E8%AF%95%E5%90%8E%E6%B5%8B%E8%AF%95%E7%AA%97%E5%8F%A3%E6%97%A0%E8%BE%93%E5%87%BA-%E5%90%8E%E5%8F%B0%E6%8A%A5%E9%94%99-%E7%A9%BA%E6%8C%87%E9%92%88">点击测试后测试窗口无输出,后台报错(空指针)</a></li></ul></details>
+<h2 id="定时任务不会运行">定时任务不会运行</h2>
+<p>需要修改配置文件<code>spider-flow-web/src/main/resources/application.properties</code>中<code>spider.job.enable</code>修改为<code>true</code></p>
+<h2 id="为什么出现检测到可能出现死循环-测试终止">为什么出现检测到可能出现死循环,测试终止</h2>
+<p>此项仅仅是在测试时出现,以防止出现真的死循环而无法停止。其检测逻辑为当节点执行次数超过预期(<code>默认5000,如需修改请修改application.properties中的spider.detect.dead-cycle值</code>)则停止运行，</p>
+<h2 id="点击测试后测试窗口无输出-后台报错-空指针">点击测试后测试窗口无输出,后台报错(空指针)</h2>
+<p>出现该情况的请检查流程是否有箭头未连接到节点上的情况</p>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>

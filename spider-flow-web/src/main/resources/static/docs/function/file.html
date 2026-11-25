@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>file · SpiderFlow 帮助文档</title>
+	<link rel="icon" href="../favicon.ico">
+	<link rel="stylesheet" href="../docs.css">
+</head>
+<body>
+	<header>
+		<a class="brand" href="../index.html">SpiderFlow 帮助文档</a>
+		<a href="../../index.html">返回 SpiderFlow</a>
+	</header>
+	<div class="layout">
+		<nav class="sidebar" aria-label="文档目录">
+				<h2>使用教程</h2>
+				<a href="../index.html">简介</a>
+				<a href="../install.html">安装部署</a>
+				<a href="../course/quick-start.html">快速入门</a>
+				<a href="../course/expression.html">表达式语法</a>
+				<a href="../course/variable.html">内置变量</a>
+				<a href="../course/advanced.html">高级应用</a>
+				<a href="../course/plugin.html">插件开发</a>
+				<a href="../course/faq.html">常见问题</a>
+				<h2>函数说明</h2>
+				<a href="extra.html">抽取函数</a>
+				<a href="base64.html">base64</a>
+				<a href="date.html">date</a>
+				<a href="file.html" aria-current="page">file</a>
+				<a href="json.html">json</a>
+				<a href="list.html">list</a>
+				<a href="random.html">random</a>
+				<a href="string.html">string</a>
+				<a href="url.html">url</a>
+				<h2>类型扩展</h2>
+				<a href="../classes/explain.html">说明</a>
+				<a href="../classes/spiderresponse.html">org.spiderflow.io.SpiderResponse</a>
+				<a href="../classes/string.html">java.lang.String</a>
+				<a href="../classes/date.html">java.util.Date</a>
+				<a href="../classes/object.html">java.lang.Object</a>
+				<a href="../classes/list.html">java.util.List</a>
+				<a href="../classes/map.html">java.util.Map</a>
+				<a href="../classes/element.html">org.jsoup.nodes.Element</a>
+				<a href="../classes/elements.html">org.jsoup.select.Elements</a>
+				<a href="../classes/array.html">数组</a>
+				<h2>插件</h2>
+				<a href="../plugins/selenium.html">selenium</a>
+				<a href="../plugins/redis.html">redis</a>
+				<a href="../plugins/mongodb.html">mongodb</a>
+				<a href="../plugins/oss.html">oss</a>
+				<a href="../plugins/ocr.html">ocr</a>
+				<a href="../plugins/proxypool.html">IP代理池插件</a>
+				<h2>参考</h2>
+				<a href="../document.html">spider-flow使用说明</a>
+				<a href="../changelog.html">更新日志</a>
+		</nav>
+		<main>
+			<article>
+<h1 id="file">file</h1>
+<details class="contents"><summary>本页目录</summary><ul><li><a href="#write">write</a></li><li><a href="#download">download</a></li><li><a href="#bytes">bytes</a></li><li><a href="#string">string</a></li></ul></details>
+<h2 id="write">write</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">写出的路径</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">content/bytes/stream</td>
+<td style="text-align:center">内容,字符串或字节数组或二进制输入流</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">append</td>
+<td style="text-align:center">布尔类型,是否追加输出,默认为false</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>无返回值</p>
+</aside>
+<ul>
+<li>
+<p>写出文件,内容为<code>hello world!</code></p>
+<pre><code class="language-javascript">${file.write('/data/test.txt','hello world!')}
+</code></pre>
+</li>
+</ul>
+<h2 id="download">download</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">写出的路径</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">url/urls</td>
+<td style="text-align:center">要下载的url或url集合</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>无返回值</p>
+</aside>
+<ul>
+<li>
+<p>写出文件,批量下载文件</p>
+<pre><code class="language-javascript">${file.download('/data/',urls)}
+</code></pre>
+</li>
+</ul>
+<h2 id="bytes">bytes</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">要读取的文件路径</td>
+<td style="text-align:center">否</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：byte[]</p>
+</aside>
+<ul>
+<li>
+<p>读取<code>/data/test.txt</code>文件</p>
+<pre><code class="language-javascript">${string.bytes('/data/test.txt')}
+</code></pre>
+</li>
+</ul>
+<h2 id="string">string</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:center">参数名</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">可否为空</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">path</td>
+<td style="text-align:center">要读取的文件路径</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">charset</td>
+<td style="text-align:center">编码格式,默认为UTF-8</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table></div>
+<aside class="tip">
+<p>返回值类型：String</p>
+</aside>
+<ul>
+<li>
+<p>读取<code>/data/test.txt</code>文件</p>
+<pre><code class="language-javascript">${string.string('/data/test.txt')}
+</code></pre>
+</li>
+</ul>
+			</article>
+			<footer>
+				<p>文档来源 <a href="https://github.com/ssssssss-team/spider-flow-site/tree/1392e9b96f491974fff3c6923c660c94cef13b33">SpiderFlow 上游文档</a></p>
+				<p>MIT | © 2019 spiderflow.org All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+</body>
+</html>
