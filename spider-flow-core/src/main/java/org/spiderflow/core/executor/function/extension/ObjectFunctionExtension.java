@@ -8,7 +8,8 @@ import org.spiderflow.core.utils.ExtractUtils;
 import org.spiderflow.executor.FunctionExtension;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONReader;
 
 @Component
 public class ObjectFunctionExtension implements FunctionExtension{
@@ -31,7 +32,7 @@ public class ObjectFunctionExtension implements FunctionExtension{
 	@Example("${objVar.jsonpath('$.code')}")
 	public static Object jsonpath(Object obj,String path){
 		if(obj instanceof String){
-			return ExtractUtils.getValueByJsonPath(JSON.parse((String)obj), path);
+			return ExtractUtils.getValueByJsonPath(JSON.parse((String)obj, JSONReader.Feature.AllowUnQuotedFieldNames), path);
 		}
 		return ExtractUtils.getValueByJsonPath(obj, path);
 	}

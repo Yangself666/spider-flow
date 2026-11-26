@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spiderflow.core.Spider;
 import org.spiderflow.core.model.SpiderFlow;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +33,9 @@ public class SpiderJobManager {
 	
 	public final static String JOB_PARAM_NAME = "SPIDER_FLOW";
 	
+	// 手动运行时再获取任务 Bean，避免启动注册定时任务时产生循环依赖
 	@Autowired
-	private SpiderJob spiderJob;
+	private ObjectProvider<SpiderJob> spiderJob;
 	
 	/**
 	 * 调度器
@@ -72,7 +74,7 @@ public class SpiderJobManager {
 	
 	public void run(String id){
 		Spider.executorInstance.submit(()->{
-			spiderJob.run(id);
+			spiderJob.getObject().run(id);
 		});
 	}
 	

@@ -3,7 +3,7 @@ services:
   # SpiderFlow Web 应用
   spider-flow:
     # 构建后的镜像名和标签
-    image: spider-flow:0.5.0
+    image: spider-flow:0.6.0
     # 使用项目根目录的 Dockerfile 构建镜像
     build: .
     # 异常退出或 Docker 重启时恢复服务，手动停止除外
@@ -25,7 +25,7 @@ services:
       # 数据库登录密码，使用内置 MySQL 时与 MYSQL_PASSWORD 一致
       SPRING_DATASOURCE_PASSWORD: 'your password'
       # 数据库 JDBC 地址，默认使用 Compose 内的 MySQL 并要求加密连接
-      SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql:3306/spiderflow'
+      SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql:3306/spiderflow?sslMode=REQUIRED'
       # 数据库登录账号，使用内置 MySQL 时与 MYSQL_USER 一致
       SPRING_DATASOURCE_USERNAME: 'spiderflow'
 
@@ -34,6 +34,8 @@ services:
       # TZ: 'Asia/Shanghai'
       # JVM 启动参数，镜像默认初始堆 128 MB，最大堆 512 MB
       # JAVA_TOOL_OPTIONS: '-Xms128m -Xmx512m'
+      # 应用日志级别，默认 INFO，查看 console.debug 时设为 DEBUG
+      # LOGGING_LEVEL_ROOT: 'INFO'
 
       # 全局定时任务开关，设为 true 后运行已启用且配置了 Cron 的流程
       # SPIDER_JOB_ENABLE: 'false'

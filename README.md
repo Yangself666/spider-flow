@@ -2,7 +2,7 @@
     <img src="https://www.spiderflow.org/images/logo.svg" width="600">
 </p>
 <p align="center">
-    <a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html"><img src="https://img.shields.io/badge/JDK-1.8+-green.svg" /></a>
+    <a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html"><img src="https://img.shields.io/badge/JDK-25-green.svg" /></a>
     <a target="_blank" href="https://www.spiderflow.org"><img src="https://img.shields.io/badge/Docs-latest-blue.svg"/></a>
     <a target="_blank" href="https://github.com/ssssssss-team/spider-flow/releases"><img src="https://img.shields.io/github/v/release/ssssssss-team/spider-flow?logo=github"></a>
     <a target="_blank" href='https://gitee.com/ssssssss-team/spider-flow'><img src="https://gitee.com/ssssssss-team/spider-flow/badge/star.svg?theme=white" /></a>
@@ -59,12 +59,12 @@
 
 ### 构建镜像
 
-在项目根目录执行以下任一命令。Dockerfile 会在构建阶段用 Maven 编译并打包应用。
+在项目根目录执行以下任一命令。Dockerfile 使用 Maven 和 Temurin 25 构建应用，运行镜像使用 Temurin 25 JRE。本地执行 Maven 构建时，请使用 JDK 25。
 
 使用 Docker 直接构建。
 
 ```bash
-docker build -t spider-flow:0.5.0 .
+docker build -t spider-flow:0.6.0 .
 ```
 
 也可以用 Compose 构建同一个镜像。
@@ -97,6 +97,16 @@ Java 进程使用容器启动用户运行，默认继承基础镜像的用户。
 
 已有任务日志仍可在页面查看和下载。
 
+### 升级已有部署
+
+在原部署目录更新 Dockerfile、Compose 配置和项目源码，沿用已部署的数据库连接、监听端口和绑定挂载。用以下命令重建并更新 SpiderFlow 应用容器。
+
+```bash
+docker compose build spider-flow
+docker compose up -d --no-deps spider-flow
+docker compose ps spider-flow
+```
+
 | 环境变量 | 用途 |
 | --- | --- |
 | `ports` | 应用在宿主机的监听地址和端口 |
@@ -106,6 +116,7 @@ Java 进程使用容器启动用户运行，默认继承基础镜像的用户。
 | `SPRING_MAIL_HOST`、`SPRING_MAIL_PORT`、`SPRING_MAIL_USERNAME`、`SPRING_MAIL_PASSWORD` | 邮件服务器和账号 |
 | `SMTP_AUTH`、`SMTP_SSL_ENABLE`、`SMTP_STARTTLS_ENABLE` | SMTP 认证和加密模式。常见配置为 465 端口启用 SSL，或 587 端口启用 STARTTLS |
 | `TZ`、`JAVA_TOOL_OPTIONS` | 容器时区和 JVM 参数 |
+| `LOGGING_LEVEL_ROOT` | 应用日志级别，默认 `INFO`。设为 `DEBUG` 可查看脚本的 `console.debug()` |
 
 使用已有 MySQL 时，直接修改 `spider-flow.environment` 下的三项 `SPRING_DATASOURCE_*`，确认目标库已有 SpiderFlow 表结构，再单独启动应用。
 

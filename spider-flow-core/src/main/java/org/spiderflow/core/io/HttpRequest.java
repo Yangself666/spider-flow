@@ -2,7 +2,15 @@ package org.spiderflow.core.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
+import java.security.GeneralSecurityException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
@@ -112,10 +120,53 @@ public class HttpRequest {
 		return this;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public HttpRequest validateTLSCertificates(boolean value){
-		this.connection.validateTLSCertificates(value);
+		connection.sslContext(value ? null : UnverifiedTls.CONTEXT);
 		return this;
+	}
+
+	private static class UnverifiedTls {
+		private static final SSLContext CONTEXT = createContext();
+
+		private static SSLContext createContext() {
+			try {
+				SSLContext context = SSLContext.getInstance("TLS");
+				// 仅在流程显式关闭证书验证时使用当前请求的 SSLContext
+				context.init(null, new TrustManager[] {new X509ExtendedTrustManager() {
+					@Override
+					public void checkClientTrusted(X509Certificate[] chain, String authType) {
+					}
+
+					@Override
+					public void checkServerTrusted(X509Certificate[] chain, String authType) {
+					}
+
+					@Override
+					public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) {
+					}
+
+					@Override
+					public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) {
+					}
+
+					@Override
+					public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
+					}
+
+					@Override
+					public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
+					}
+
+					@Override
+					public X509Certificate[] getAcceptedIssuers() {
+						return new X509Certificate[0];
+					}
+				}}, null);
+				return context;
+			} catch (GeneralSecurityException e) {
+				throw new IllegalStateException("无法初始化请求的 TLS 配置", e);
+			}
+		}
 	}
 	
 	public HttpResponse execute() throws IOException{

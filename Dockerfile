@@ -1,4 +1,4 @@
-FROM maven:3.9-eclipse-temurin-8 AS build
+FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /build
 
 COPY pom.xml ./
@@ -12,7 +12,9 @@ COPY docker/application.properties spider-flow-web/src/main/resources/applicatio
 
 RUN mvn -B -ntp package
 
-FROM eclipse-temurin:8-jre-jammy
+FROM eclipse-temurin:25-jre-noble
+LABEL org.opencontainers.image.title="SpiderFlow" \
+      org.opencontainers.image.version="0.6.0"
 WORKDIR /opt/spider-flow
 
 RUN apt-get update \

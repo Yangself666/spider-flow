@@ -129,8 +129,31 @@ html,body{
 	cursor: pointer;
 	z-index: 1;
 }
-.properties-container .editor-form-node .layui-form-relative .layui-icon-close.function-remove{
-	top : 5px;
+.function-row {
+	display: grid;
+	grid-template-columns: 100px minmax(0, 1fr);
+}
+.function-row::after {
+	display: none;
+}
+.function-row-label {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	min-height: 24px;
+}
+.function-row-label > .function-remove {
+	flex: 0 0 24px;
+	height: 24px;
+	line-height: 24px;
+	font-size: 16px;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+}
+.function-row > .layui-input-block {
+	margin-left: 0;
 }
 .properties-container .editor-form-node .layui-form-relative .layui-icon-close.cmd-remove{
 	top : 5px;
@@ -273,6 +296,20 @@ html,body{
 }
 .expanded-code-editor {
 	height: 100%;
+}
+
+.function-guide {
+	color: #555;
+	font-size: 12px;
+	line-height: 1.6;
+	overflow-wrap: anywhere;
+}
+.function-guide p + p {
+	margin-top: 4px;
+}
+.function-guide code {
+	padding: 0 3px;
+	background-color: rgba(127, 127, 127, .12);
 }
 
 .hint-grammer{
@@ -493,7 +530,7 @@ html,body{
 .CodeMirror-lines{
 	padding : 0px !important;
 }
-.CodeMirror-cursor{
+.properties-container .CodeMirror-cursor{
 	height : 16px !important;
 	margin-top: 3px;
 }

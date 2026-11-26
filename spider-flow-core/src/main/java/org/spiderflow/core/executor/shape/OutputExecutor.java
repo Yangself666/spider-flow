@@ -1,6 +1,5 @@
 package org.spiderflow.core.executor.shape;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -125,7 +124,7 @@ public class OutputExecutor implements ShapeExecutor, SpiderListener {
 			}
 			//去除不能序列化的参数
 			try {
-				JSON.toJSONString(value, FastJsonSerializer.serializeConfig);
+				FastJsonSerializer.toDisplayJson(value);
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;

@@ -6,7 +6,8 @@ import java.util.Map;
 import org.spiderflow.annotation.Comment;
 import org.spiderflow.annotation.Example;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONReader;
 
 public interface SpiderResponse {
 
@@ -25,7 +26,7 @@ public interface SpiderResponse {
 	@Comment("获取json")
 	@Example("${resp.json}")
 	default Object getJson(){
-		return JSON.parse(getHtml());
+		return JSON.parse(getHtml(), JSONReader.Feature.AllowUnQuotedFieldNames);
 	}
 	@Comment("获取cookies")
 	@Example("${resp.cookies}")

@@ -1,6 +1,7 @@
 package org.spiderflow.core.script;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spiderflow.core.expression.ExpressionTemplate;
@@ -8,7 +9,6 @@ import org.spiderflow.core.expression.ExpressionTemplateContext;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.Date;
 import java.util.HashSet;
@@ -50,7 +50,45 @@ public class ScriptManager {
     }
 
     public static ScriptEngine createEngine(){
-        return new ScriptEngineManager().getEngineByName("nashorn");
+        ScriptEngine engine = new NashornScriptEngineFactory().getScriptEngine();
+        try {
+            // 使用任务线程的日志上下文，让脚本日志进入测试窗口和运行日志
+            engine.eval("""
+                    var console = (function() {
+                        var logger = Java.type('org.slf4j.LoggerFactory').getLogger('org.spiderflow.core.script.Console');
+
+                        function log(level) {
+                            return function() {
+                                var parts = [];
+                                for (var i = 0; i < arguments.length; i++) {
+                                    var value = arguments[i];
+                                    if (value !== null && typeof value === 'object') {
+                                        try {
+                                            parts.push(JSON.stringify(value));
+                                            continue;
+                                        } catch (error) {
+                                            // 循环引用等对象使用默认字符串表示
+                                        }
+                                    }
+                                    parts.push(String(value));
+                                }
+                                logger[level](parts.join(' '));
+                            };
+                        }
+
+                        return {
+                            log: log('info'),
+                            info: log('info'),
+                            warn: log('warn'),
+                            error: log('error'),
+                            debug: log('debug')
+                        };
+                    })();
+                    """);
+        } catch (ScriptException e) {
+            throw new IllegalStateException("初始化脚本日志失败", e);
+        }
+        return engine;
     }
 
     public static void lock(){
@@ -93,7 +131,7 @@ public class ScriptManager {
     }
 
     public static void validScript(String functionName,String parameters,String script) throws Exception {
-        new ScriptEngineManager().getEngineByName("nashorn").eval(concatScript(functionName,parameters,script));
+        createEngine().eval(concatScript(functionName,parameters,script));
     }
 
     public static Object eval(ExpressionTemplateContext context, String functionName, Object ... args) throws ScriptException, NoSuchMethodException {

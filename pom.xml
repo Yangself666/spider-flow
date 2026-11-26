@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.spiderflow</groupId>
 	<artifactId>spider-flow</artifactId>
-	<version>0.5.0</version>
+	<version>0.6.0</version>
 	<packaging>pom</packaging>
 	<name>spider-flow</name>
 	<url>https://gitee.com/jmxd/spider-flow</url>
@@ -11,29 +11,30 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.7.RELEASE</version>
+		<version>4.1.1</version>
 	</parent>
 	<properties>
+		<java.version>25</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spider-flow.version>${project.version}</spider-flow.version>
-		<alibaba.fastjson.version>1.2.83</alibaba.fastjson.version>
-		<alibaba.druid.version>1.1.16</alibaba.druid.version>
-		<alibaba.transmittable.version>2.11.5</alibaba.transmittable.version>
-		<mybatis.plus.version>3.1.0</mybatis.plus.version>
-		<mysql.connector.version>8.0.33</mysql.connector.version>
-		<apache.commons.text.verion>1.6</apache.commons.text.verion>
-		<apache.commons.csv.verion>1.8</apache.commons.csv.verion>
-		<commons.io.version>2.7</commons.io.version>
-		<guava.version>28.2-jre</guava.version>
-		<jsoup.version>1.11.3</jsoup.version>
-		<xsoup.version>0.3.1</xsoup.version>
+		<alibaba.fastjson2.version>2.0.66</alibaba.fastjson2.version>
+		<alibaba.druid.version>1.2.28</alibaba.druid.version>
+		<alibaba.transmittable.version>2.14.5</alibaba.transmittable.version>
+		<mybatis.plus.version>3.5.16</mybatis.plus.version>
+		<mysql.connector.version>9.7.0</mysql.connector.version>
+		<apache.commons.text.verion>1.15.0</apache.commons.text.verion>
+		<apache.commons.csv.verion>1.14.1</apache.commons.csv.verion>
+		<commons.io.version>2.21.0</commons.io.version>
+		<guava.version>33.5.0-jre</guava.version>
+		<jsoup.version>1.24.1</jsoup.version>
+		<xsoup.version>0.3.7</xsoup.version>
 	</properties>
 
 	<dependencies>
 		<!-- spring-boot相关配置 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,7 +55,7 @@
 		<!-- 数据库相关 -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<artifactId>mybatis-plus-spring-boot4-starter</artifactId>
 			<version>${mybatis.plus.version}</version>
 		</dependency>
 		<dependency>
@@ -64,19 +65,24 @@
 		</dependency>
 		<!-- alibaba相关包 -->
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>${alibaba.fastjson.version}</version>
+			<groupId>com.alibaba.fastjson2</groupId>
+			<artifactId>fastjson2</artifactId>
+			<version>${alibaba.fastjson2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
-			<artifactId>druid-spring-boot-starter</artifactId>
+			<artifactId>druid-spring-boot-4-starter</artifactId>
 			<version>${alibaba.druid.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>transmittable-thread-local</artifactId>
 			<version>${alibaba.transmittable.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjdk.nashorn</groupId>
+			<artifactId>nashorn-core</artifactId>
+			<version>15.7</version>
 		</dependency>
 		<!-- apache commons相关 -->
 		<dependency>

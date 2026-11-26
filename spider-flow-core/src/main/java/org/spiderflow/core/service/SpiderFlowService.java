@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -58,7 +58,7 @@ public class SpiderFlowService extends ServiceImpl<SpiderFlowMapper, SpiderFlow>
 	@PostConstruct
 	private void initJobs(){
 		//清空所有任务下次执行时间
-		sfMapper.resetNextExecuteTime();
+		sfMapper.resetAllNextExecuteTimes();
 		if (!spiderJobEnable) {
 			logger.info("定时任务已通过 spider.job.enable 配置停用");
 			return;

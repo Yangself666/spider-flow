@@ -1,82 +1,99 @@
 package org.spiderflow.core.serializer;
 
-import com.alibaba.fastjson.serializer.JSONSerializer;
-import com.alibaba.fastjson.serializer.ObjectSerializer;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerialContext;
-import com.alibaba.fastjson.serializer.SerializeWriter;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSONFactory;
+import com.alibaba.fastjson2.JSONWriter;
+import com.alibaba.fastjson2.JSONWriter.Path;
+import com.alibaba.fastjson2.writer.FieldWriter;
+import com.alibaba.fastjson2.writer.ObjectWriterAdapter;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
+import java.util.Map;
 
-/**
- * Created on 2019-12-23
- */
-public class FastJsonSerializer implements ObjectSerializer {
+public class FastJsonSerializer {
 
-    public static SerializeConfig serializeConfig;
+    private final JSONWriter writer;
+    private final Map<Object, Path> ancestors = new IdentityHashMap<>();
 
-    static {
-        serializeConfig = new SerializeConfig();
-        FastJsonSerializer serializer = new FastJsonSerializer();
-        serializeConfig.put(Long.TYPE, serializer);
-        serializeConfig.put(Long.class, serializer);
-        serializeConfig.put(BigDecimal.class, serializer);
-        serializeConfig.put(BigInteger.class, serializer);
+    private FastJsonSerializer(JSONWriter writer) {
+        this.writer = writer;
     }
 
     public static String toDisplayJson(Object value) {
-        try (SerializeWriter writer = new SerializeWriter()) {
-            JSONSerializer serializer = new DisplaySerializer(writer);
-            serializer.write(value);
+        JSONWriter.Context context = JSONFactory.createWriteContext(JSONWriter.Feature.WriteByteArrayAsBase64);
+        context.setDateFormat("millis");
+        try (JSONWriter writer = JSONWriter.of(context)) {
+            new FastJsonSerializer(writer).writeValue(value, Path.ROOT);
             return writer.toString();
         }
     }
 
-    private static class DisplaySerializer extends JSONSerializer {
+    private void writeValue(Object value, Path path) {
+        if (value == null) {
+            writer.writeNull();
+            return;
+        }
+        // 浏览器将这些数字作为字符串读取，保留精度和小数位
+        if (value instanceof Long || value instanceof BigInteger || value instanceof BigDecimal) {
+            writer.writeString(value.toString());
+            return;
+        }
 
-        DisplaySerializer(SerializeWriter writer) {
-            super(writer, serializeConfig);
-            // 同一个对象可以在不同分支展开，仅保留当前路径上的循环引用
-            references = new IdentityHashMap<Object, SerialContext>() {
-                @Override
-                public SerialContext get(Object object) {
-                    for (SerialContext current = getContext(); current != null; current = current.parent) {
-                        if (current.object == object) {
-                            return current;
-                        }
-                    }
-                    return null;
-                }
+        // 同一对象可以在不同分支展开，只为当前路径上的循环写入引用
+        Path ancestor = ancestors.putIfAbsent(value, path);
+        if (ancestor != null) {
+            writer.writeReference(ancestor == path.parent ? ".." : ancestor.toString());
+            return;
+        }
 
-                @Override
-                public boolean containsKey(Object object) {
-                    return get(object) != null;
+        try {
+            if (value instanceof Map<?, ?> map) {
+                writer.startObject();
+                map.forEach((key, item) -> writeProperty(String.valueOf(key), item, path));
+                writer.endObject();
+            } else if (value instanceof Iterable<?> items) {
+                writeItems(items, path);
+            } else if (value instanceof Object[] items) {
+                writeItems(Arrays.asList(items), path);
+            } else if (writer.getObjectWriter(value.getClass()) instanceof ObjectWriterAdapter<?> bean) {
+                writer.startObject();
+                for (FieldWriter<?> field : bean.getFieldWriters()) {
+                    writeBeanProperty(field, value, path);
                 }
-
-                @Override
-                public SerialContext put(Object object, SerialContext context) {
-                    // 引用从当前序列化路径查询，无需缓存已访问对象
-                    return null;
-                }
-            };
+                writer.endObject();
+            } else {
+                writer.writeAny(value);
+            }
+        } finally {
+            ancestors.remove(value);
         }
     }
 
-    @Override
-    public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType, int features) throws IOException {
-        if(object == null){
-            if(serializer.isEnabled(SerializerFeature.WriteNullNumberAsZero)){
-                serializer.out.write("0");
-            }else{
-                serializer.out.writeNull();
-            }
-            return;
+    private <T> void writeBeanProperty(FieldWriter<T> field, Object bean, Path path) {
+        @SuppressWarnings("unchecked")
+        T value = (T) bean;
+        writeProperty(field.fieldName, field.getFieldValue(value), path);
+    }
+
+    private void writeProperty(String name, Object value, Path path) {
+        if (value != null) {
+            writer.writeName(name);
+            writer.writeColon();
+            writeValue(value, new Path(path, name));
         }
-        serializer.out.writeString(object.toString());
+    }
+
+    private void writeItems(Iterable<?> items, Path path) {
+        writer.startArray();
+        int index = 0;
+        for (Object item : items) {
+            if (index > 0) {
+                writer.writeComma();
+            }
+            writeValue(item, new Path(path, index++));
+        }
+        writer.endArray();
     }
 }

@@ -58,16 +58,51 @@
 		<main>
 			<article>
 <h1 id="高级应用">高级应用</h1>
-<details class="contents"><summary>本页目录</summary><ul><li><a href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%87%BD%E6%95%B0">自定义函数</a></li><li><a href="#%E7%88%AC%E5%8F%96%E5%8A%A8%E6%80%81%E6%B8%B2%E6%9F%93%E7%9A%84%E9%A1%B5%E9%9D%A2">爬取动态渲染的页面</a></li></ul></details>
+<details class="contents"><summary>本页目录</summary>
+<ul>
+<li><a href="#自定义函数">自定义函数</a>
+<ul>
+<li><a href="#定义自定义函数">定义自定义函数</a></li>
+<li><a href="#使用自定义函数">在流程中调用</a></li>
+<li><a href="#脚本可用功能">脚本可用功能</a></li>
+<li><a href="#脚本日志">脚本日志</a></li>
+</ul>
+</li>
+<li><a href="#爬取动态渲染的页面">爬取动态渲染的页面</a></li>
+</ul>
+</details>
 <h2 id="自定义函数">自定义函数</h2>
 <h3 id="自定义函数介绍">自定义函数介绍</h3>
-<p>在开发爬虫的过程中,发现无法使用现有函数完成想要的功能，也不想在java中开发，此时就可以考虑使用自定义函数，自定义函数的语法是JS(Java Nashorn引擎)</p>
+<p>SpiderFlow 在服务端使用 Nashorn 执行自定义 JavaScript。你可以在脚本中处理参数、调用其他自定义函数，再用 <code>return</code> 把结果交回流程。</p>
 <h3 id="定义自定义函数">定义自定义函数</h3>
-<p><img src="../images/course/function-screenshot.png" alt="流程实例三" title="function-screenshot.png"></p>
-<h3 id="使用自定义函数">使用自定义函数</h3>
+<p>在左侧「自定义函数」中新增函数。以 <code>add</code> 为例，函数名填 <code>add</code>，函数入参填 <code>a,b</code>，脚本中填写函数体。</p>
+<pre><code>return a + b;</code></pre>
+<p><img src="../images/course/function-screenshot.png" alt="自定义函数配置示例"></p>
+<h3 id="使用自定义函数">在流程中调用</h3>
 <ul>
-<li>在表达式中使用，<code>${add(1,2)}</code></li>
+<li>在「执行函数」节点中填写 <code>${add(1,2)}</code>，流程运行到该节点时会调用函数。这个节点适合等待、写日志等操作。</li>
+<li>需要使用返回值时，在「定义变量」节点中把变量名填为 <code>total</code>，变量值填为 <code>${add(1,2)}</code>。后续节点用 <code>${total}</code> 读取结果 <code>3</code>。</li>
 </ul>
+<h3 id="脚本可用功能">脚本可用功能</h3>
+<table>
+<thead><tr><th>来源</th><th>功能</th><th>用法</th></tr></thead>
+<tbody>
+<tr><td>JavaScript 内置</td><td><code>JSON</code>、<code>Math</code>、<code>Date</code>、<code>RegExp</code>、字符串和数组方法</td><td><code>JSON.parse(text)</code> 解析 JSON，<code>Math.round(value)</code> 取整，<code>names.join(',')</code> 拼接数组</td></tr>
+<tr><td>Nashorn 内置</td><td><code>Java.type()</code>、<code>Java.to()</code>、<code>Java.from()</code></td><td>访问 Java 类，在 JavaScript 数组与 Java 数组之间转换</td></tr>
+<tr><td>Nashorn 内置</td><td><code>print()</code>、<code>load()</code>、<code>loadWithNewGlobal()</code></td><td>写入脚本引擎的输出流，或加载其他脚本</td></tr>
+<tr><td>SpiderFlow 提供</td><td><code>_eval()</code></td><td>用当前流程的变量和内置函数计算 SpiderFlow 表达式</td></tr>
+<tr><td>SpiderFlow 提供</td><td><a href="#脚本日志"><code>console</code></a></td><td>将消息写入流程日志</td></tr>
+</tbody>
+</table>
+<p>例如 <code>_eval('${title}')</code> 读取当前流程的 <code>title</code> 变量，<code>_eval("${string.upper('hello')}")</code> 调用 SpiderFlow 的字符串函数并得到 <code>HELLO</code>。</p>
+<h3 id="脚本日志">脚本日志</h3>
+<pre><code>console.log("test log");
+console.info("已处理", 3, "条记录");
+console.warn("标题缺失");
+console.error("保存失败");
+console.debug("响应详情", { status: 200 });</code></pre>
+<p><code>console.log()</code> 和 <code>console.info()</code> 都写入 INFO 级别。<code>console.warn()</code>、<code>console.error()</code>、<code>console.debug()</code> 分别写入 WARN、ERROR、DEBUG 级别。可以传入多个参数，普通对象和数组会以 JSON 形式显示。</p>
+<p>测试流程时在测试窗口的日志区查看，正常运行时在对应任务的日志中查看。DEBUG 消息是否显示取决于日志级别设置。</p>
 <h2 id="爬取动态渲染的页面">爬取动态渲染的页面</h2>
 			</article>
 			<footer>

@@ -22,18 +22,29 @@
     			<div class="layui-input-block" codemirror="loopCount" placeholder="请输入循环次数" data-value="{{=d.data.object.loopCount}}"></div>
     		</div>
 			<hr>
+			<div class="layui-form-item">
+				<div class="layui-form-label">调用写法</div>
+				<div class="layui-input-block function-guide">
+					<p>每个输入框填写一个 <code>${函数名(参数)}</code>，按从上到下的顺序执行。自定义函数需先在「自定义函数」中保存。</p>
+					<p>例如 <code>${thread.sleep(1000L)}</code> 会等待 1 秒。</p>
+					<p>要保存返回值，在「定义变量」中把变量名填为 <code>upperTitle</code>，变量值填为 <code>${string.upper('hello')}</code>。后续节点可用 <code>${upperTitle}</code> 读取 <code>HELLO</code>。</p>
+				</div>
+			</div>
 			{{# layui.each(d.data.object['function'],function(index,item){ }}
 			<div id="function{{=index}}" class="draggable" draggable="true" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-				<div class="layui-form-item layui-form-relative">
-					<i class="layui-icon layui-icon-close function-remove"></i>
-					<label class="layui-form-label">执行函数</label>
-					<div class="layui-input-block array" codemirror="function" placeholder="执行函数" data-value="{{=d.data.object['function'][index]}}"></div>
+				<div class="layui-form-item function-row">
+					<div class="function-row-label">
+						<button type="button" class="layui-icon layui-icon-close function-remove" title="删除函数" aria-label="删除函数"></button>
+						<span>执行函数</span>
+					</div>
+					<div class="layui-input-block array" codemirror="function" placeholder="填写 ${函数名(参数)}" data-value="{{=d.data.object['function'][index]}}"></div>
 				</div>
 			</div>
 			{{# }) }}
 			<div class="layui-form-item">
 				<div class="layui-input-block">
-					<button class="layui-btn function-add" type="button">添加一个函数</button>
+					<button class="layui-btn function-add" type="button">添加函数</button>
+					<button class="layui-btn layui-btn-primary function-add" type="button" data-example="${thread.sleep(1000L)}">添加等待示例</button>
 				</div>
 			</div>
     	</form>

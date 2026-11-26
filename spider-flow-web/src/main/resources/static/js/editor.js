@@ -51,6 +51,8 @@ function openExpandedEditor(editor,label,$expand){
 		title : label ? '放大编辑 · ' + $('<span>').text(label).html() : '放大编辑',
 		content : '<div class="expanded-code-editor"></div>',
 		skin : 'codemirror',
+		// CodeMirror 按实际像素定位光标，弹窗打开时保持坐标比例稳定
+		anim : -1,
 		area : [Math.min(800,viewport.clientWidth - 24) + 'px', Math.min(440,viewport.clientHeight - 24) + 'px'],
 		success : function(dom){
 			// 共享文档内容与撤销历史，原字段继续参与流程表单保存
@@ -504,9 +506,25 @@ $(function(){
 				}
 			})
 		}).on("click",".editor-form-node .function-add",function(){
-			var index = $(".draggable").length;
-			$(this).parent().parent().before('<div id="function' + index + '" class="draggable" draggable="true" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="layui-form-item layui-form-relative"><i class="layui-icon layui-icon-close function-remove"></i><label class="layui-form-label">执行函数</label><div class="layui-input-block array" codemirror="function" placeholder="执行函数"></div></div></div>');
+			var $button = $(this);
+			var example = $button.attr('data-example');
+			var index = $button.closest('form').find('.draggable').length;
+			while(document.getElementById('function' + index)){
+				index++;
+			}
+			var $row = $('<div id="function' + index + '" class="draggable" draggable="true" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">'
+				+ '<div class="layui-form-item function-row"><div class="function-row-label">'
+				+ '<button type="button" class="layui-icon layui-icon-close function-remove" title="删除函数" aria-label="删除函数"></button>'
+				+ '<span>执行函数</span></div>'
+				+ '<div class="layui-input-block array" codemirror="function" placeholder="填写 ${函数名(参数)}"></div>'
+				+ '</div></div>');
+			$row.find('[codemirror]').attr('data-value',example || '');
+			$button.closest('.layui-form-item').before($row);
 			renderCodeMirror();
+			if(example){
+				serializeForm();
+			}
+			$row.find('.CodeMirror')[0].CodeMirror.focus();
 		}).on("click",".editor-form-node .cmd-add",function(){
 			var index = $(".draggable").length;
 			$(this).parent().parent().before('<div id="' + index + '" class="draggable" draggable="true" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)"><div class="layui-form-item layui-form-relative"><i class="layui-icon layui-icon-close cmd-remove"></i><label class="layui-form-label">执行命令</label><div class="layui-input-block array" codemirror="cmd" placeholder="执行命令"></div></div></div>');

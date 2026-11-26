@@ -13,7 +13,8 @@ import org.jsoup.select.Elements;
 import org.spiderflow.model.SpiderNode;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONReader;
 
 /**
  * 爬虫流程图工具类
@@ -80,7 +81,7 @@ public class SpiderFlowUtils {
 	private static Map<String,Object> getSpiderFlowJsonProperty(Element element){
 		Elements elements = element.getElementsByTag("JsonProperty");
 		if(!CollectionUtils.isEmpty(elements)){
-			return JSON.parseObject(elements.get(0).html(),Map.class);
+			return JSON.parseObject(elements.get(0).html(),Map.class, JSONReader.Feature.AllowUnQuotedFieldNames);
 		}
 		return null;
 	}
