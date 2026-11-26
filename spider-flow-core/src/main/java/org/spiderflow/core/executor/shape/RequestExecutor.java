@@ -15,6 +15,7 @@ import org.spiderflow.context.SpiderContext;
 import org.spiderflow.core.executor.function.MD5FunctionExecutor;
 import org.spiderflow.core.io.HttpRequest;
 import org.spiderflow.core.io.HttpResponse;
+import org.spiderflow.core.job.SpiderLogFiles;
 import org.spiderflow.core.utils.ExpressionUtils;
 import org.spiderflow.executor.ShapeExecutor;
 import org.spiderflow.io.SpiderResponse;
@@ -299,7 +300,7 @@ public class RequestExecutor implements ShapeExecutor,Grammerable, SpiderListene
                         //记录访问失败的日志
 						if(context.getFlowId() != null){ //测试环境
 							//TODO 需增加记录请求参数
-							File file = new File(workspcace, context.getFlowId() + File.separator + "logs" + File.separator + "access_error.log");
+							File file = SpiderLogFiles.requestErrorLog(workspcace, context.getFlowId());
 							try {
 								File directory = file.getParentFile();
 								if(!directory.exists()){

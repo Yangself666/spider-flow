@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spiderflow.Grammerable;
 import org.spiderflow.annotation.Comment;
+import org.spiderflow.core.job.SpiderLogFiles;
 import org.spiderflow.core.model.SpiderFlow;
 import org.spiderflow.core.service.SpiderFlowService;
 import org.spiderflow.core.utils.ExecutorsUtils;
@@ -179,7 +180,10 @@ public class SpiderFlowController {
 			Integer maxId = spiderFlowService.getFlowMaxTaskId(id);
 			taskId = maxId == null ? "" : maxId.toString();
 		}
-		File file = new File(workspace, id + File.separator + "logs" + File.separator + taskId + ".log");
+		File file = SpiderLogFiles.findTaskLog(workspace, id, taskId);
+		if (file == null) {
+			return ResponseEntity.notFound().build();
+		}
 		return ResponseEntity.ok()
 				.header("Content-Disposition","attachment; filename=spider.log")
 				.contentType(MediaType.parseMediaType("application/octet-stream"))
@@ -192,7 +196,10 @@ public class SpiderFlowController {
 			Integer maxId = spiderFlowService.getFlowMaxTaskId(id);
 			taskId = maxId == null ? "" : maxId.toString();
 		}
-		File logFile = new File(workspace, id + File.separator + "logs" + File.separator + taskId + ".log");
+		File logFile = SpiderLogFiles.findTaskLog(workspace, id, taskId);
+		if (logFile == null) {
+			return new JsonBean<>(0,"日志文件不存在");
+		}
 		try (RandomAccessFileReader reader = new RandomAccessFileReader(new RandomAccessFile(logFile,"r"), index == null ? -1 : index, reversed == null || reversed)){
 			return new JsonBean<>(reader.readLine(count == null ? 10 : count,keywords,matchcase != null && matchcase,regx != null && regx));
 		} catch(FileNotFoundException e){

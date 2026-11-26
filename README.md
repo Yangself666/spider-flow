@@ -57,6 +57,26 @@
 
 ## Docker 部署
 
+### 构建镜像
+
+在项目根目录执行以下任一命令。Dockerfile 会在构建阶段用 Maven 编译并打包应用。
+
+使用 Docker 直接构建。
+
+```bash
+docker build -t spider-flow:0.5.0 .
+```
+
+也可以用 Compose 构建同一个镜像。
+
+```bash
+docker compose build spider-flow
+```
+
+构建完成后可用 `docker image ls spider-flow` 查看镜像。
+
+### 启动服务
+
 直接编辑 `compose.yaml`。使用内置 MySQL 时，把 `MYSQL_PASSWORD` 和 `SPRING_DATASOURCE_PASSWORD` 改成同一个业务账号密码，再为 `MYSQL_ROOT_PASSWORD` 设置管理密码。
 
 ```bash
@@ -68,6 +88,14 @@ docker compose ps
 在使用常规 Docker 引擎的 Linux 宿主机上，启动前执行 `sudo chown 10001:10001 ./data/spider`，让应用容器的运行用户可以写入目录。接入外部 MySQL 时只需准备 `./data/spider`。
 
 默认访问 `http://127.0.0.1:8088`。应用端口默认仅绑定宿主机回环地址，线上可由反向代理转发。MySQL 数据和 SpiderFlow 工作目录分别保存在 Compose 文件旁的 `./data/mysql` 和 `./data/spider`。内置 MySQL 首次启动时会创建空表。已有命名卷中的数据需要在切换前迁入对应目录。
+
+日志集中保存在 `./data/spider/logs` 下。
+
+- 应用日志为 `spider-flow.log`
+- 新任务日志为 `<流程ID>/<任务ID>.log`
+- 请求失败记录为 `<流程ID>/access_error.log`
+
+已有任务日志仍可在页面查看和下载。
 
 | 环境变量 | 用途 |
 | --- | --- |

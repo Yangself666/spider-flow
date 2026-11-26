@@ -57,7 +57,7 @@ public class SpiderJobContext extends SpiderContext{
 	public static SpiderJobContext create(String directory,String id,Integer taskId,boolean output){
 		OutputStream os = null;
 		try {
-			File file = new File(new File(directory),id + File.separator + "logs" + File.separator + taskId + ".log");
+			File file = SpiderLogFiles.taskLogForWrite(directory, id, taskId);
 			File dirFile = file.getParentFile();
 			if(!dirFile.exists()){
 				dirFile.mkdirs();
