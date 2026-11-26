@@ -18,14 +18,11 @@ WORKDIR /opt/spider-flow
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd --gid 10001 spiderflow \
-    && useradd --uid 10001 --gid 10001 --no-create-home --no-log-init spiderflow \
-    && install -d -o 10001 -g 10001 /data/spider /data/spider/logs
+    && mkdir -p /data/spider/logs
 
 COPY --from=build /build/spider-flow-web/target/spider-flow.jar ./spider-flow.jar
 ENV TZ=Asia/Shanghai SERVER_PORT=8088 SPIDER_WORKSPACE=/data/spider \
     JAVA_TOOL_OPTIONS="-Xms128m -Xmx512m"
-USER 10001:10001
 EXPOSE 8088
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \

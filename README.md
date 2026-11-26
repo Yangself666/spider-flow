@@ -85,7 +85,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-在使用常规 Docker 引擎的 Linux 宿主机上，启动前执行 `sudo chown 10001:10001 ./data/spider`，让应用容器的运行用户可以写入目录。接入外部 MySQL 时只需准备 `./data/spider`。
+Java 进程使用容器启动用户运行，默认继承基础镜像的用户。可通过 Compose 的 `user` 指定 UID/GID，该用户需要能写入挂载的工作目录。接入外部 MySQL 时只需准备 `./data/spider`。
 
 默认访问 `http://127.0.0.1:8088`。应用端口默认仅绑定宿主机回环地址，线上可由反向代理转发。MySQL 数据和 SpiderFlow 工作目录分别保存在 Compose 文件旁的 `./data/mysql` 和 `./data/spider`。内置 MySQL 首次启动时会创建空表。已有命名卷中的数据需要在切换前迁入对应目录。
 
