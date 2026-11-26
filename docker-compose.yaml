@@ -24,8 +24,8 @@ services:
       # 数据库连接配置
       # 数据库登录密码，使用内置 MySQL 时与 MYSQL_PASSWORD 一致
       SPRING_DATASOURCE_PASSWORD: 'your password'
-      # 数据库 JDBC 地址，默认使用 Compose 内的 MySQL 并要求加密连接
-      SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql:3306/spiderflow?sslMode=REQUIRED'
+      # 数据库 JDBC 地址，默认使用 Compose 内的 MySQL
+      SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql:3306/spiderflow'
       # 数据库登录账号，使用内置 MySQL 时与 MYSQL_USER 一致
       SPRING_DATASOURCE_USERNAME: 'spiderflow'
 

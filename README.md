@@ -77,7 +77,7 @@ docker compose build spider-flow
 
 ### 启动服务
 
-直接编辑 `compose.yaml`。使用内置 MySQL 时，把 `MYSQL_PASSWORD` 和 `SPRING_DATASOURCE_PASSWORD` 改成同一个业务账号密码，再为 `MYSQL_ROOT_PASSWORD` 设置管理密码。
+直接编辑 `docker-compose.yaml`。使用内置 MySQL 时，把 `MYSQL_PASSWORD` 和 `SPRING_DATASOURCE_PASSWORD` 改成同一个业务账号密码，再为 `MYSQL_ROOT_PASSWORD` 设置管理密码。
 
 ```bash
 mkdir -p ./data/spider ./data/mysql
@@ -124,7 +124,7 @@ docker compose ps spider-flow
 docker compose up -d --build --no-deps spider-flow
 ```
 
-定时任务、线程数、时区、JVM 参数和 SMTP 属于可选项。按需在 `compose.yaml` 取消对应行的注释并修改示例值，再重新执行启动命令应用配置。
+定时任务、线程数、时区、JVM 参数和 SMTP 属于可选项。按需在 `docker-compose.yaml` 取消对应行的注释并修改示例值，再重新执行启动命令应用配置。
 
 ## 免责声明
 请勿将`spider-flow`应用到任何可能会违反法律规定和道德约束的工作中，请友善使用`spider-flow`，遵守蜘蛛协议，不要将`spider-flow`用于任何非法用途。如您选择使用`spider-flow`即代表您遵守此协议，作者不承担任何由于您违反此协议带来任何的法律风险和损失，一切后果由您承担。
